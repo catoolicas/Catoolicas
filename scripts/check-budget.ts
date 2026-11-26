@@ -2,13 +2,14 @@
  * Verifica o orçamento de desempenho do build estático.
  *
  * Para cada página HTML em `build/`, mede (gzip nível 9) o próprio HTML e os recursos que
- * ela carrega de início: JS (modulepreload e <script src>) e CSS (<link rel="stylesheet">).
+ * ela carrega de início: JS (`modulepreload`, `preload as=script`, `<script src>` e `import()`
+ * literal em scripts inline) e CSS (`stylesheet` e `preload as=style`).
  * Compara com os limites de `scripts/budgets.json` e termina com código 1 se algum for excedido.
  *
  * Uso: pnpm build && pnpm budget
  * Zero dependências: só módulos nativos do Node (executado com type stripping).
  */
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
@@ -20,9 +21,12 @@ export type Violacao = { pagina: string; metrica: keyof Limites; medido: number;
 
 const METRICAS = ['htmlGzip', 'jsGzip', 'cssGzip'] as const;
 
+/** Lê atributos com aspas duplas, simples ou sem aspas (HTML minificado). */
 function atributos(tag: string): Record<string, string> {
 	const resultado: Record<string, string> = {};
-	for (const [, nome, valor] of tag.matchAll(/([\w:-]+)\s*=\s*"([^"]*)"/g)) {
+	const padrao = /([\w:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g;
+	for (const [, nome, duplas, simples, semAspas] of tag.matchAll(padrao)) {
+		const valor = duplas ?? simples ?? semAspas;
 		if (nome !== undefined && valor !== undefined) resultado[nome.toLowerCase()] = valor;
 	}
 	return resultado;
@@ -33,15 +37,19 @@ export function extrairRecursos(html: string): { js: string[]; css: string[] } {
 	const js = new Set<string>();
 	const css = new Set<string>();
 	for (const [tag] of html.matchAll(/<link\b[^>]*>/gi)) {
-		const { rel, href } = atributos(tag);
+		const { rel, href, as } = atributos(tag);
 		if (!href || !rel) continue;
 		const rels = rel.toLowerCase().split(/\s+/);
-		if (rels.includes('modulepreload')) js.add(href);
-		else if (rels.includes('stylesheet')) css.add(href);
+		const preload = rels.includes('preload');
+		if (rels.includes('modulepreload') || (preload && as === 'script')) js.add(href);
+		else if (rels.includes('stylesheet') || (preload && as === 'style')) css.add(href);
 	}
-	for (const [tag] of html.matchAll(/<script\b[^>]*>/gi)) {
-		const { src } = atributos(tag);
+	for (const [, abertura, corpo] of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+		const { src } = atributos(`<script${abertura ?? ''}>`);
 		if (src) js.add(src);
+		for (const [, alvo] of (corpo ?? '').matchAll(/\bimport\(\s*["']([^"']+)["']\s*\)/g)) {
+			if (alvo) js.add(alvo);
+		}
 	}
 	return { js: [...js], css: [...css] };
 }
@@ -86,13 +94,15 @@ export function medirBuild(diretorioBuild: string): Medicao[] {
 		.map((arquivo) => {
 			const html = readFileSync(arquivo, 'utf8');
 			const { js, css } = extrairRecursos(html);
-			const somar = (caminhos: string[]) =>
-				caminhos.reduce((total, href) => {
-					const alvo = href.startsWith('/')
-						? join(diretorioBuild, href)
-						: resolve(dirname(arquivo), href);
-					return total + tamanhoGzip(readFileSync(alvo));
-				}, 0);
+			// Deduplica pelo caminho resolvido: o mesmo arquivo pode aparecer com grafias diferentes.
+			const somar = (caminhos: string[]) => {
+				const alvos = new Set(
+					caminhos.map((href) =>
+						href.startsWith('/') ? join(diretorioBuild, href) : resolve(dirname(arquivo), href)
+					)
+				);
+				return [...alvos].reduce((total, alvo) => total + tamanhoGzip(readFileSync(alvo)), 0);
+			};
 			return {
 				pagina: relative(diretorioBuild, arquivo),
 				htmlGzip: tamanhoGzip(html),
@@ -135,4 +145,8 @@ function principal(): void {
 	console.log(`\nOrçamento respeitado em ${medicoes.length} página(s).`);
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) principal();
+// Compara caminhos reais: um caminho com link simbólico não pode desativar a verificação.
+const executadoDiretamente =
+	process.argv[1] !== undefined &&
+	realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+if (executadoDiretamente) principal();

@@ -19,18 +19,17 @@
 
 <section aria-labelledby="em-preparo">
 	<h2 id="em-preparo">Em preparação</h2>
-	<p class="rubrica">Este site está em construção. As primeiras ferramentas previstas são:</p>
+	<p class="rubrica">Este site está em construção. As primeiras ferramentas em preparação são:</p>
 	<ul>
 		<li><strong>Terço do dia</strong> — rezar o terço e o rosário, dezena a dezena.</li>
 		<li>
 			<strong>Exame de consciência</strong> — preparação para a confissão que funciona apenas no seu aparelho,
 			sem enviar nada a ninguém.
 		</li>
-		<li><strong>Novenário</strong> — novenas organizadas dia a dia.</li>
 	</ul>
 </section>
 
-<p><a href={resolve('/sobre')}>Sobre o projeto, privacidade e licenças</a></p>
+<p><a href={resolve('sobre/')}>Sobre o projeto, privacidade e licenças</a></p>
 
 <style>
 	.abertura {

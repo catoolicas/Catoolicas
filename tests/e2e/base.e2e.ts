@@ -3,7 +3,7 @@ import { AxeBuilder } from '@axe-core/playwright';
 
 const ROTAS = [
 	{ caminho: '/', h1: 'Catoolicas', linkAtual: 'Início' },
-	{ caminho: '/sobre', h1: 'Sobre o projeto', linkAtual: 'Sobre' }
+	{ caminho: '/sobre/', h1: 'Sobre o projeto', linkAtual: 'Sobre' }
 ] as const;
 
 // Meta do projeto: WCAG 2.2 nível AA.
@@ -72,6 +72,25 @@ for (const rota of ROTAS) {
 				.locator('[aria-current="page"]');
 			await expect(atual).toHaveCount(1);
 			await expect(atual).toHaveText(rota.linkAtual);
+		});
+
+		test('todos os links internos respondem 200 no servidor estático estrito', async ({
+			page,
+			baseURL
+		}) => {
+			const origem = new URL(baseURL ?? 'http://localhost:4173').origin;
+			await page.goto(rota.caminho);
+			const hrefs = await page
+				.locator('a[href]')
+				.evaluateAll((links) => links.map((a) => (a as HTMLAnchorElement).href));
+			const internos = [...new Set(hrefs.map((h) => h.split('#')[0] ?? h))].filter(
+				(h) => new URL(h).origin === origem
+			);
+			expect(internos.length).toBeGreaterThan(0);
+			for (const url of internos) {
+				const resposta = await page.request.get(url, { maxRedirects: 0 });
+				expect(resposta.status(), url).toBe(200);
+			}
 		});
 
 		for (const esquema of ['light', 'dark'] as const) {

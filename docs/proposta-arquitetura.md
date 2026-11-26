@@ -1,6 +1,6 @@
 # Proposta de arquitetura e execução — Plataforma Católica FOSS (nome de trabalho: Catoolicas)
 
-> Proposta aprovada em 26/11/2026. Decisões ainda pendentes estão na seção 12 e em `docs/editorial/pendencias.md`. Correção posterior à aprovação: o Korvo cadastra **9** jaculatórias, não ~40 (ver CHG-0001).
+> **Rev. 1 — histórica.** As fases, o roadmap e as perguntas foram substituídos pela [rev. 2](proposta-revisao-2.md); a arquitetura técnica continua válida, salvo onde a rev. 2 diz o contrário. Proposta aprovada em 26/11/2026. Decisões ainda pendentes estão na seção 12 e em `docs/editorial/pendencias.md`. Correção posterior à aprovação: o Korvo cadastra **9** jaculatórias, não ~40 (ver CHG-0001).
 
 ## Contexto
 

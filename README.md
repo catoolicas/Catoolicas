@@ -6,7 +6,21 @@ Plataforma católica livre: ferramentas para a oração, o exame de consciência
 - Conteúdo com procedência verificável.
 - "Catoolicas" é o nome de trabalho.
 
-> **Status:** em desenvolvimento. Esta versão contém apenas a fundação técnica (CHG-0001). As ferramentas ainda não estão disponíveis.
+> **Status:** em desenvolvimento. A fundação técnica está pronta (CHG-0001). O Terço e o Exame de consciência estão em construção.
+
+## Fases
+
+| Fase              | Conteúdo                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **MVP**           | Terço (a partir do Terço Diário do Korvo, em português e latim) e Exame de consciência, os dois sem servidor        |
+| Trilha Android    | App via Tauri 2: releases no GitHub (Obtainium), depois F-Droid e demais lojas                                      |
+| Fase 2 — Estudo   | Leitura e comparação de documentos da Igreja e de santos nas edições comprovadamente livres; sinopse dos Evangelhos |
+| Fase 3 — Loja     | Missais e breviários acessíveis (edições próprias em Typst); depois, artigos de outros vendedores                   |
+| Fase 4 — Conexões | Pedidos de oração, novenas e outras ideias                                                                          |
+
+Detalhes em [`docs/proposta-revisao-2.md`](docs/proposta-revisao-2.md).
+
+**Responsáveis pelo projeto e pelo conteúdo:** [`garamogger`](https://github.com/garamogger) (Korvo) e [`williamdasilvazoia8-blip`](https://github.com/williamdasilvazoia8-blip).
 
 ## Princípios
 
@@ -64,7 +78,8 @@ pnpm verify
 
 ## Documentação
 
-- [Proposta de arquitetura e roadmap](docs/proposta-arquitetura.md)
+- [Proposta revisada (rev. 2): fases e MVP](docs/proposta-revisao-2.md)
+- [Proposta de arquitetura (rev. 1)](docs/proposta-arquitetura.md)
 - [Decisões arquiteturais (ADRs)](docs/adr/)
 - [Changes](docs/changes/)
 - [Pendências editoriais](docs/editorial/pendencias.md)
@@ -73,9 +88,10 @@ pnpm verify
 
 ## Referências
 
-- [Terço Diário](https://github.com/garamogger/terco-diario), do Korvo (GPL-3.0). É a referência do módulo do Terço. Nenhum código ou texto dele foi incorporado até agora; isso depende das decisões registradas em `docs/editorial/pendencias.md`.
+- [Terço Diário](https://github.com/garamogger/terco-diario), do Korvo (GPL-3.0). É a base do módulo do Terço: o conteúdo será importado com procedência registrada (CHG-0002).
 
 ## Licença
 
-- Código, configuração e documentação: [GNU GPL, versão 3 ou posterior](LICENSE) (`GPL-3.0-or-later`).
-- Conteúdos de terceiros mantêm as licenças das suas fontes, declaradas no padrão [REUSE](https://reuse.software) (`REUSE.toml`).
+- Código, documentação e conteúdo original: [GNU GPL, versão 3 ou posterior](LICENSE) (`GPL-3.0-or-later`).
+- Textos em domínio público continuam em domínio público.
+- Procedência e licença de cada arquivo declaradas no padrão [REUSE](https://reuse.software) (`REUSE.toml`).

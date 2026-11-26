@@ -11,8 +11,8 @@ Obrigado pelo interesse. Este é um projeto comunitário de longo prazo. O proce
 - **Relatos de problemas e sugestões:** abra uma _issue_.
 - **Revisão de conteúdo:** apontar erros em orações, referências e procedências.
 - **Revisão de acessibilidade e usabilidade.**
-- **Contribuições de código:** temporariamente **restritas aos mantenedores**.
-  - O motivo é preservar a decisão sobre distribuição em lojas de aplicativos (`docs/adr/0001-licenciamento.md`, item 7).
+- **Contribuições de código:** temporariamente **restritas aos responsáveis** (`garamogger` e `williamdasilvazoia8-blip`).
+  - O motivo é preservar a futura permissão para distribuição em lojas de aplicativos, como a App Store (`docs/adr/0001-licenciamento.md`, item 7).
   - Essa restrição será revista assim que a decisão for tomada.
 
 ## Fluxo de trabalho
@@ -24,15 +24,16 @@ Obrigado pelo interesse. Este é um projeto comunitário de longo prazo. O proce
    - os riscos.
 2. **Decisões duradouras** viram um ADR curto em `docs/adr/`.
 3. **Implementação** em incrementos pequenos: uma change por PR, sem alterar áreas não relacionadas.
-4. **Verificação:** `pnpm verify` precisa passar, e o CI repete tudo a partir de um checkout limpo.
+4. **Verificação:** `pnpm verify` precisa passar. O CI repete tudo a partir de um checkout limpo e roda também `reuse lint`, que exige `pipx` ou `uvx` (`uvx reuse lint`).
 5. **Revisão independente** antes do merge.
 6. **Registro do resultado:** a change documenta o que foi medido, o que ficou pendente e o que foi apenas simulado.
 
 ## Conteúdo religioso
 
-- **Nunca** invente orações, meditações, passagens ou atribuições de autoria. Não use texto gerado por IA.
-- Todo texto precisa de procedência (obra, edição, tradução) e de licença ou permissão verificada (`docs/adr/0003-conteudo-separado.md`).
-- Conteúdo só é publicado com aprovação do responsável editorial (`docs/editorial/pendencias.md`).
+- **Nunca** invente nem gere automaticamente orações, meditações, passagens, citações ou atribuições de autoria.
+- A única exceção a rascunhos gerados por IA são os itens do Exame de consciência: entram como `em-revisao` e só são publicados após aprovação item a item (`docs/adr/0003-conteudo-separado.md`, item 6).
+- Todo texto precisa de procedência (obra, edição, tradução) e de licença ou permissão verificada.
+- Conteúdo só é publicado com aprovação de um dos responsáveis (`docs/editorial/pendencias.md`).
 
 ## Privacidade
 

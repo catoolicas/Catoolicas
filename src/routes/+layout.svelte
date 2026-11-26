@@ -10,7 +10,7 @@
 	// por isso não serve para saber qual é a página atual.
 	const links = [
 		{ rota: '/', href: resolve('/'), rotulo: 'Início' },
-		{ rota: '/sobre', href: resolve('/sobre'), rotulo: 'Sobre' }
+		{ rota: '/sobre/', href: resolve('sobre/'), rotulo: 'Sobre' }
 	];
 </script>
 

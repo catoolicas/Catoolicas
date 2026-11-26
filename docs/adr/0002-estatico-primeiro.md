@@ -16,6 +16,7 @@
 
 1. **Adapter e pré-renderização:**
    - Usar `@sveltejs/adapter-static` com `strict: true`: o build falha se alguma rota não puder ser pré-renderizada.
+   - `trailingSlash = 'always'`: cada rota vira `rota/index.html`, e os links internos levam a barra final. Assim funcionam em qualquer servidor estático, inclusive os que não resolvem URLs sem extensão. O `/sobre` dava 404 em `python3 -m http.server` antes desta regra.
    - `export const prerender = true` no layout raiz.
 2. **Sem código de servidor nas rotas do núcleo:**
    - Só `load` universais (`+page.ts`/`+layout.ts`).
@@ -48,4 +49,5 @@
 
 - O MVP pode ser hospedado em qualquer serviço estático. A escolha do host fica adiada para o M4 e é reversível.
 - Funcionalidades com dados (pedidos com moderação, encomendas) exigirão uma API separada e um ADR próprio.
-- Páginas interativas (Terço, Exame) terão orçamento de JS próprio. O padrão é 35 KB gzip, uma meta proposta a recalibrar.
+- Páginas interativas (Terço, Exame) têm orçamento de JS padrão de 50 KB gzip. Só a hidratação do SvelteKit 3 + Svelte 5 mediu ~39 KB; a meta anterior de 35 KB era inviável.
+- Os testes E2E rodam contra `build/` servido por um servidor estático **estrito** (`scripts/serve-build.ts`), e não pelo `vite preview`. O `vite preview` resolve URLs sem extensão e esconderia links quebrados.

@@ -1,6 +1,6 @@
 # CHG-0001 — Fundação do projeto
 
-- **Status:** implementada localmente; push e CI bloqueados por falta de acesso ao GitHub
+- **Status:** implementada localmente; revisada e corrigida na [CHG-0001b](CHG-0001b-revisao-e-decisoes.md); push e CI bloqueados por falta de acesso ao GitHub
 - **Marco:** M0
 - **Branch:** `claude/quirky-lovelace-1cp3q1`
 
@@ -95,11 +95,11 @@ Teste de mutação feito em 26/11/2026 e revertido em seguida:
 ## Validação
 
 - **Ambiente de desenvolvimento em nuvem** (Node 22.23.5, pnpm 12.23.0):
-  - `check`, `lint`, `test:unit` (15/15), `build`, `budget`, `licenses:check` (176 pacotes, todos permitidos) e `reuse lint` (31/31 arquivos) passaram.
+  - `check`, `lint`, `test:unit` (15/15), `build`, `budget`, `licenses:check` (176 pacotes, todos permitidos) e `reuse lint` passaram. **Correção:** o "31/31" registrado antes vinha de uma execução anterior à criação dos documentos; a contagem real do commit `90dfdd4` é 39/39 (ver CHG-0001b).
   - `test:e2e` passou em `chromium` e `chromium-movel` (26/26), usando o Chromium pré-instalado do ambiente via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
   - **Firefox e WebKit não foram executados localmente:** os navegadores não estão instalados aqui. Eles rodam só no CI.
 - **Clone limpo do commit `90dfdd4`** (26/11/2026), com `pnpm install --frozen-lockfile`:
-  - mesma sequência e mesmos resultados acima: 15/15 unitários, orçamento e licenças OK, REUSE 31/31, E2E 26/26 em Chromium;
+  - mesma sequência e mesmos resultados acima: 15/15 unitários, orçamento e licenças OK, REUSE conforme, E2E 26/26 em Chromium;
   - ressalva: o store do pnpm do contêiner já estava populado, então a instalação não baixou pacotes da rede. A instalação a frio fica para o CI.
 - **CI no GitHub Actions: não executado.**
   - O `git push` da branch foi recusado com HTTP 403: o Claude não tem acesso ao repositório pela organização no GitHub.

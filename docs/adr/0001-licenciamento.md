@@ -1,51 +1,51 @@
-# ADR-0001 — Licenciamento e contribuições
+# ADR-0001 — Licenciamento, contribuições e distribuição
 
-- **Status:** Proposto. Os itens 1, 6 e 7 dependem das respostas às perguntas Q1 e Q2 da proposta. Até lá, valem as opções recomendadas.
+- **Status:** Aceito (decisões dos responsáveis em 26/11/2026)
 - **Data:** 26/11/2026
+- **Responsáveis pelo projeto e pelo conteúdo:** `garamogger` (Korvo) e `williamdasilvazoia8-blip`
 
 ## Contexto
 
-- **Licença exigida [REQ]:** o código deve ser livre, sob GPL-3.0.
-- **Conteúdo de terceiros:** o repositório vai conter também orações, meditações, documentos e imagens. Muitos desses textos têm direitos próprios, como traduções e textos da LEV.
-- **Distribuição futura:** a versão mobile via Tauri 2 pode passar por lojas de aplicativos.
-- **Histórico com a App Store:** houve conflito entre a GPL e a App Store da Apple (VLC e GNU Go, 2010–2011). O estado atual dos termos **não está confirmado**.
-- **Referência do Terço:** o código do Korvo (`garamogger/terco-diario`) é GPL-3.0, mas não diz "only" nem "or later".
+- O código precisa ser livre.
+- O repositório também terá orações, meditações, documentos e, mais tarde, edições de missais e breviários.
+- Os aplicativos serão distribuídos nas principais lojas, começando pelo F-Droid e por releases no GitHub (para o Obtainium).
+- Houve conflito entre a GPL e a App Store da Apple em 2010–2011 (VLC, GNU Go). O estado atual dos termos **não está confirmado**.
+- O conteúdo do Terço vem de `garamogger/terco-diario`, publicado sob GPL-3.0. O autor é um dos responsáveis do projeto.
 
 ## Decisão
 
-1. **Código, configuração e documentação:** `GPL-3.0-or-later`. É a forma recomendada pela FSF e evita relicenciamento futuro.
-2. **Conteúdo original que não é código** (textos editoriais próprios, arte, design): `CC-BY-SA-4.0`.
-   - Essa licença é unidirecionalmente compatível com a GPLv3.
-   - Passa a valer quando surgir o primeiro conteúdo desse tipo.
-3. **Conteúdo de terceiros:** fica com a licença da fonte, registrada junto com a procedência (ADR-0003).
-   - Nunca entra sem licença ou permissão verificada.
-   - Conteúdo restrito cifrado não é publicado.
-4. **Conformidade [REUSE 3.3](https://reuse.software):** `REUSE.toml` na raiz, textos das licenças em `LICENSES/`, verificação no CI (`reuse lint`).
-5. **Dependências:** só licenças da lista permitida em `scripts/check-licenses.ts`, verificada no CI.
+1. **Tudo é GPL:** código, configuração, documentação e **conteúdo original** do projeto (textos próprios, arte, design, fontes Typst) ficam sob `GPL-3.0-or-later`.
+2. **Domínio público continua domínio público.** A GPL cobre só as contribuições originais (seleção, organização, notas, código). Textos de terceiros entram com a procedência e o status registrados (ADR-0003), anotados no `REUSE.toml`.
+3. **Conformidade [REUSE 3.3](https://reuse.software):**
+   - `REUSE.toml` com `precedence = "closest"`: um arquivo com licença própria, por cabeçalho SPDX ou arquivo `.license` ao lado, não herda a anotação geral;
+   - textos das licenças em `LICENSES/`;
+   - verificação no CI.
+4. **Dependências:** só licenças da lista permitida em `scripts/check-licenses.ts`, verificada no CI.
    - **GPL-2.0-only é proibida**, por ser incompatível com a GPLv3.
    - Ampliar a lista exige justificativa registrada aqui.
-6. **Contribuições:** [Developer Certificate of Origin](https://developercertificate.org/) (`git commit -s`), sem CLA.
-7. **Lojas de aplicativos (pendente, Q2):** até a decisão, **só os mantenedores contribuem código**.
-   - O código do Korvo também pode entrar, se ele concordar explicitamente.
-   - Isso preserva a possibilidade de adotar uma permissão adicional (GPLv3, seção 7) para distribuição em lojas. Essa permissão deve ser redigida ou revisada por alguém qualificado.
-   - Revisões, conteúdo editorial e relatos de problemas continuam abertos a todos.
+5. **Contribuições:** [Developer Certificate of Origin](https://developercertificate.org/) (`git commit -s`), sem CLA.
+6. **Distribuição:**
+   1. Web.
+   2. APKs assinados nas releases do GitHub (Obtainium).
+   3. F-Droid.
+   4. Demais lojas.
+7. **App Store do iOS (pendente):** até existir uma permissão adicional (GPLv3, seção 7) para distribuição em lojas, **só os responsáveis contribuem código**.
+   - Essa permissão deve ser redigida ou revisada por alguém qualificado.
+   - Como os responsáveis são os titulares, podem concedê-la sem depender de terceiros.
+   - Revisões, sugestões de conteúdo e relatos de problemas continuam abertos a todos.
+8. **Impressos (Fase 3):** cada livro produzido a partir de fontes GPL traz o aviso de licença e a oferta escrita do código-fonte (GPLv3, seção 6). O texto em domínio público continua livre.
 
 ## Alternativas consideradas
 
-| Alternativa                                    | Por que não (por ora)                                                                              |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| GPL-3.0-only                                   | Impede adotar versões futuras da GPL sem relicenciar                                               |
-| AGPL-3.0                                       | Obrigaria a oferecer o código a quem só usa o site; o requisito é GPL e o repositório já é público |
-| CLA com cessão de direitos                     | Cria atrito para contribuidores e concentra direitos; o DCO basta para registrar a origem          |
-| Tudo sob GPL, inclusive arte e textos próprios | A GPL é pensada para software; a CC BY-SA é mais adequada para texto e imagem                      |
+| Alternativa                     | Por que não                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| GPL-3.0-only                    | Impede adotar versões futuras da GPL sem relicenciar                                            |
+| AGPL-3.0                        | Obrigaria a oferecer o código a quem só usa o site; a decisão foi GPL e o repositório é público |
+| CC BY-SA para conteúdo original | Proposta na rev. 1; os responsáveis preferiram uma licença única para tudo                      |
+| CLA com cessão de direitos      | Cria atrito e concentra direitos; o DCO basta para registrar a origem                           |
 
 ## Consequências
 
 - O CI falha se uma dependência trouxer licença fora da lista ou se algum arquivo ficar sem licença declarada.
-- Portar código do Korvo exige pedir que ele declare explicitamente "GPL-3.0-or-later" e que concorde com a política do item 7.
-- Adotar depois a permissão para lojas exige o consentimento de todos os titulares de código. Por isso o item 7 restringe as contribuições até a decisão.
-
-## Pendências
-
-- **Q1:** confirmar `GPL-3.0-or-later`, `CC-BY-SA-4.0` e DCO.
-- **Q2:** decidir se a App Store do iOS é objetivo e, se for, providenciar o texto da permissão adicional.
+- Conteúdo em domínio público precisará de uma anotação REUSE própria, sem a GPL, quando entrar (Fase 2).
+- Abrir contribuições de código a terceiros exige, antes, decidir a permissão do item 7.

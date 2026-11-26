@@ -40,7 +40,7 @@
 <section aria-labelledby="licencas">
 	<h2 id="licencas">Código-fonte e licenças</h2>
 	<p>
-		O código é software livre, publicado sob a
+		O código e o conteúdo original do projeto são livres, publicados sob a
 		<a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="external noopener noreferrer">
 			GNU General Public License, versão 3 ou posterior
 		</a>. Você pode estudá-lo, modificá-lo e redistribuí-lo nos termos dessa licença. O
@@ -49,8 +49,8 @@
 		</a> está disponível publicamente.
 	</p>
 	<p>
-		Textos e imagens de terceiros mantêm as licenças de suas fontes, indicadas junto de cada
-		conteúdo.
+		Textos em domínio público continuam em domínio público, e cada texto de terceiros traz a sua
+		procedência.
 	</p>
 </section>
 

@@ -2,18 +2,31 @@ import { describe, expect, it } from 'vitest';
 import { avaliar, extrairRecursos, limitesPara, type Orcamento } from './check-budget.ts';
 
 describe('extrairRecursos', () => {
-	it('encontra JS de modulepreload e <script src>, e CSS de stylesheet, em qualquer ordem de atributos', () => {
+	it('encontra JS de modulepreload, <script src> e import() inline, e CSS de stylesheet, em qualquer ordem de atributos', () => {
 		const html = `
 			<link href="./_app/a.js" rel="modulepreload">
 			<link rel="modulepreload" href="./_app/b.js">
 			<link href="./_app/estilo.css" rel="stylesheet">
 			<link rel="icon" href="./favicon.svg">
 			<script type="module" src="./_app/c.js"></script>
-			<script>import('./_app/d.js')</script>`;
+			<script>Promise.all([import('./_app/d.js'), import("./_app/e.js")])</script>`;
 		expect(extrairRecursos(html)).toEqual({
-			js: ['./_app/a.js', './_app/b.js', './_app/c.js'],
+			js: ['./_app/a.js', './_app/b.js', './_app/c.js', './_app/d.js', './_app/e.js'],
 			css: ['./_app/estilo.css']
 		});
+	});
+
+	it('conta preload as=script e as=style, mas não outros preloads', () => {
+		const html = `
+			<link rel="preload" as="script" href="s.js">
+			<link rel="preload" as="style" href="e.css">
+			<link rel="preload" as="font" href="f.woff2">`;
+		expect(extrairRecursos(html)).toEqual({ js: ['s.js'], css: ['e.css'] });
+	});
+
+	it('lê atributos com aspas simples ou sem aspas (HTML minificado)', () => {
+		const html = `<link rel=modulepreload href=a.js><link rel='stylesheet' href='b.css'><script src=c.js></script>`;
+		expect(extrairRecursos(html)).toEqual({ js: ['a.js', 'c.js'], css: ['b.css'] });
 	});
 
 	it('não conta o mesmo recurso duas vezes', () => {

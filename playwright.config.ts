@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// Os testes rodam contra o build de produção (`pnpm build` antes), nunca contra o dev server:
-// é o mesmo artefato que será publicado e medido pelo orçamento de desempenho.
+// Os testes rodam contra a pasta `build/` (rode `pnpm build` antes), servida por um servidor
+// estático estrito (scripts/serve-build.ts) — não pelo dev server nem pelo `vite preview`, que
+// resolve URLs sem extensão e esconderia links que quebram em hospedagens estáticas simples.
 //
 // PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH permite usar um Chromium já instalado no ambiente
 // (por exemplo, em contêineres de desenvolvimento) em vez do baixado pelo Playwright.
@@ -19,7 +20,7 @@ export default defineConfig({
 		trace: 'off'
 	},
 	webServer: {
-		command: 'pnpm preview',
+		command: 'node scripts/serve-build.ts 4173',
 		port: 4173,
 		reuseExistingServer: !process.env.CI
 	},

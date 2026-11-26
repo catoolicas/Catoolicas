@@ -10,6 +10,7 @@
  * Zero dependências: só módulos nativos do Node (executado com type stripping).
  */
 import { execFileSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 /**
@@ -151,4 +152,8 @@ function principal(): void {
 	console.log('Todas as licenças estão na lista permitida.');
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) principal();
+// Compara caminhos reais: um caminho com link simbólico não pode desativar a verificação.
+const executadoDiretamente =
+	process.argv[1] !== undefined &&
+	realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+if (executadoDiretamente) principal();
