@@ -1,6 +1,6 @@
 # CHG-0004a — Interface do Terço (funcional)
 
-- **Status:** implementada; aguardando revisão e merge em `main` para publicar
+- **Status:** implementada e **publicada** em 26/11/2026 ([run 45895544356](https://github.com/catoolicas/Catoolicas/actions/runs/45895544356)). Verificada ao vivo: as páginas respondem 200; num navegador real, o "terço de hoje" levou aos luminosos numa quinta-feira, sem erros de console e sem requisições externas.
 - **Marco:** M1 (Terço)
 - **Depende de:** CHG-0002 (conteúdo), CHG-0003 (domínio)
 - **Fica para a CHG-0004b:** identidade visual do Korvo (Cormorant Garamond auto-hospedada e logo do corvo em SVG, quando o vetor chegar)

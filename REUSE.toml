@@ -21,3 +21,20 @@ SPDX-FileCopyrightText = [
   "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>",
 ]
 SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# Conteúdo do Exame importado do terco-diario (ver content/exame/SOURCES.md).
+[[annotations]]
+path = "content/exame/**"
+precedence = "closest"
+SPDX-FileCopyrightText = [
+  "2026 Korvo (garamogger) <https://github.com/garamogger/terco-diario>",
+  "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>",
+]
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# Rascunhos assistidos do Exame: redação do projeto, não do terco-diario.
+[[annotations]]
+path = "content/exame/rascunhos.ts"
+precedence = "closest"
+SPDX-FileCopyrightText = "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>"
+SPDX-License-Identifier = "GPL-3.0-or-later"

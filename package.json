@@ -33,6 +33,7 @@
 		"test:e2e": "playwright test",
 		"budget": "node scripts/check-budget.ts",
 		"licenses:check": "node scripts/check-licenses.ts",
+		"exame:rascunhos": "node scripts/exame-rascunhos.ts",
 		"verify": "pnpm check && pnpm lint && pnpm test:unit && pnpm build && pnpm budget && pnpm licenses:check && pnpm test:e2e"
 	},
 	"devDependencies": {
