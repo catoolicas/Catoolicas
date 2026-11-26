@@ -1,6 +1,6 @@
 # CHG-0001 — Fundação do projeto
 
-- **Status:** implementada; aguardando revisão
+- **Status:** implementada localmente; push e CI bloqueados por falta de acesso ao GitHub
 - **Marco:** M0
 - **Branch:** `claude/quirky-lovelace-1cp3q1`
 
@@ -98,8 +98,12 @@ Teste de mutação feito em 26/11/2026 e revertido em seguida:
   - `check`, `lint`, `test:unit` (15/15), `build`, `budget`, `licenses:check` (176 pacotes, todos permitidos) e `reuse lint` (31/31 arquivos) passaram.
   - `test:e2e` passou em `chromium` e `chromium-movel` (26/26), usando o Chromium pré-instalado do ambiente via `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`.
   - **Firefox e WebKit não foram executados localmente:** os navegadores não estão instalados aqui. Eles rodam só no CI.
-- **Clone limpo:** registrado após o commit, nesta mesma seção.
-- **CI no GitHub Actions:** o resultado da primeira execução será registrado aqui. Até lá, Firefox e WebKit estão **não verificados**.
+- **Clone limpo do commit `90dfdd4`** (26/11/2026), com `pnpm install --frozen-lockfile`:
+  - mesma sequência e mesmos resultados acima: 15/15 unitários, orçamento e licenças OK, REUSE 31/31, E2E 26/26 em Chromium;
+  - ressalva: o store do pnpm do contêiner já estava populado, então a instalação não baixou pacotes da rede. A instalação a frio fica para o CI.
+- **CI no GitHub Actions: não executado.**
+  - O `git push` da branch foi recusado com HTTP 403: o Claude não tem acesso ao repositório pela organização no GitHub.
+  - Firefox, WebKit e a instalação a frio continuam **não verificados** até o primeiro CI verde.
 
 ## Desvios em relação à proposta
 
