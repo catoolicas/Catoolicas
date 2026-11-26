@@ -5,6 +5,7 @@ import {
 	dezenaAnterior,
 	fim,
 	inicio,
+	passoEquivalente,
 	progresso,
 	proximaDezena,
 	proximo
@@ -68,5 +69,28 @@ describe('progresso', () => {
 		expect(progresso(seq, primeiraAve).avesRezadas).toBe(1);
 		expect(progresso(seq, seq.length - 1).avesRezadas).toBe(50);
 		expect(progresso(seq, 10_000).passo).toBe(seq.length);
+	});
+});
+
+describe('passoEquivalente', () => {
+	const semJac = montarSequencia({ ...configPadrao(['gozosos']), jaculatorias: [] }, CONTEUDO);
+
+	it('mantém a mesma conta quando as jaculatórias mudam', () => {
+		const ave = seq.findIndex(
+			(p) => p.tipo === 'ave-maria' && p.dezena.indice === 3 && p.conta === 7
+		);
+		const nova = passoEquivalente(seq, ave, semJac);
+		expect(semJac[nova]).toMatchObject({ tipo: 'ave-maria', conta: 7, dezena: { indice: 3 } });
+	});
+
+	it('numa jaculatória que deixou de existir, vai ao anúncio da mesma dezena', () => {
+		const jac = seq.findIndex((p) => p.tipo === 'jaculatoria' && p.dezena.indice === 2);
+		const nova = passoEquivalente(seq, jac, semJac);
+		expect(semJac[nova]).toMatchObject({ tipo: 'anuncio', dezena: { indice: 2 } });
+	});
+
+	it('mantém orações da abertura e do fecho', () => {
+		expect(passoEquivalente(seq, 0, semJac)).toBe(0);
+		expect(passoEquivalente(seq, seq.length - 1, semJac)).toBe(semJac.length - 1);
 	});
 });

@@ -39,7 +39,8 @@ describe('montarSequencia — terço com os padrões da origem', () => {
 	});
 
 	it('com meditações de Montfort, cada Ave-Maria traz o seu ponto e nenhuma cláusula', () => {
-		const pontos = SERIES_DE_MISTERIOS[0].misterios[2].pontos;
+		const pontos = SERIES_DE_MISTERIOS.find((s) => s.id === 'gozosos')?.misterios[2].pontos ?? [];
+		expect(pontos).toHaveLength(10);
 		const aves = doTipo(passos, 'ave-maria').filter((a) => a.dezena.misterio === 2);
 		expect(aves.map((a) => a.ponto?.pt)).toEqual(pontos.map((p) => p.pt));
 		expect(aves.every((a) => a.clausula === undefined)).toBe(true);

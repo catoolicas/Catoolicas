@@ -18,10 +18,13 @@
 </p>
 
 <section aria-labelledby="em-preparo">
-	<h2 id="em-preparo">Em preparação</h2>
-	<p class="rubrica">Este site está em construção. As primeiras ferramentas em preparação são:</p>
+	<h2 id="em-preparo">Ferramentas</h2>
+	<p class="rubrica">Este site está em construção. Ferramentas:</p>
 	<ul>
-		<li><strong>Terço do dia</strong> — rezar o terço e o rosário, dezena a dezena.</li>
+		<li>
+			<a href={resolve('terco/')}><strong>Terço do dia</strong></a> — rezar o terço e o rosário, dezena
+			a dezena, com as meditações de São Luís Maria Grignion de Montfort.
+		</li>
 		<li>
 			<strong>Exame de consciência</strong> — preparação para a confissão que funciona apenas no seu aparelho,
 			sem enviar nada a ninguém.

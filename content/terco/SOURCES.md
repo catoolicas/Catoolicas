@@ -32,6 +32,11 @@
 
 ## O que foi e o que não foi importado
 
+- **Organização desde a CHG-0004a:**
+  - `series.ts`: cabeçalhos das séries;
+  - `misterios/<serie>.ts`: um arquivo por série;
+  - `misterios.ts`: índice.
+  - Os textos não foram alterados: a conferência foi refeita com 785/785.
 - **Importado:**
   - 4 séries com 5 mistérios cada: título, fruto, perícope, oferecimento, intenção do Pai-Nosso, fecho, pontos de Montfort e notas;
   - as cláusulas;

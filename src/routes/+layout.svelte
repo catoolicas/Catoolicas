@@ -10,8 +10,17 @@
 	// de publicação nem com a barra final; `href` é relativo (paths.relative).
 	const links = [
 		{ rota: '/', href: resolve('/'), rotulo: 'Início' },
+		{ rota: '/terco', href: resolve('terco/'), rotulo: 'Terço' },
 		{ rota: '/sobre', href: resolve('sobre/'), rotulo: 'Sobre' }
 	];
+
+	/** "page" na própria página; "true" nas páginas internas da seção (por exemplo, uma série). */
+	function atual(rota: string): 'page' | 'true' | undefined {
+		const id = page.route.id;
+		if (id === rota) return 'page';
+		if (rota !== '/' && id?.startsWith(`${rota}/`)) return 'true';
+		return undefined;
+	}
 </script>
 
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
@@ -23,7 +32,7 @@
 			<ul>
 				{#each links as link (link.rota)}
 					<li>
-						<a href={link.href} aria-current={page.route.id === link.rota ? 'page' : undefined}>
+						<a href={link.href} aria-current={atual(link.rota)}>
 							{link.rotulo}
 						</a>
 					</li>
@@ -71,7 +80,7 @@
 	.cabecalho-interno,
 	main,
 	.rodape {
-		max-width: var(--largura-texto);
+		max-width: var(--largura-pagina, var(--largura-texto));
 		margin-inline: auto;
 		padding-inline: var(--margem-lateral);
 	}
@@ -108,7 +117,7 @@
 		padding-inline: var(--espaco-2);
 	}
 
-	nav a[aria-current='page'] {
+	nav a[aria-current] {
 		text-decoration-thickness: 0.15em;
 	}
 

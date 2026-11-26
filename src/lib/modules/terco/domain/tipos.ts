@@ -63,16 +63,20 @@ export type Misterio = {
 	readonly nota?: Texto;
 };
 
-export type SerieDeMisterios = {
+export type CincoMisterios = Cinco<Misterio>;
+
+/** Dados de uma série sem os mistérios (leves: servem ao menu, que lista todas as séries). */
+export type CabecalhoSerie = {
 	readonly id: Serie;
 	readonly nome: Texto;
 	readonly tema: Texto;
 	readonly oracaoFinal: Texto;
 	readonly aviso?: Texto;
-	readonly misterios: Cinco<Misterio>;
 	readonly procedencia: Procedencia;
 	readonly status: StatusEditorial;
 };
+
+export type SerieDeMisterios = CabecalhoSerie & { readonly misterios: CincoMisterios };
 
 export type Clausulas = {
 	readonly [S in Serie]: Cinco<Texto>;

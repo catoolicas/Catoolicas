@@ -28,6 +28,7 @@
 4. **CSP no modo `hash`**, emitida como `<meta http-equiv>` nas páginas pré-renderizadas.
    - Diretivas: `default-src 'self'`, `script-src 'self'` (mais os hashes do SvelteKit), `style-src 'self'`, `img-src 'self'`, `font-src 'self'`, `connect-src 'self'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`.
    - Sem `unsafe-inline` e sem `unsafe-eval`.
+   - **Exceção única (CHG-0004a):** `style-src-attr 'unsafe-hashes' 'sha256-S8qM…'` autoriza só o estilo inline do anunciador de rotas do SvelteKit (`div#svelte-announcer`), que aparece nas páginas com JS. Se o SvelteKit mudar esse estilo, os testes E2E acusam a violação de CSP.
    - Em `<meta>`, `frame-ancestors`, `report-uri` e `sandbox` são ignorados. Por isso vão como **cabeçalhos do host** quando ele for escolhido (M4), junto com `Referrer-Policy`, `Permissions-Policy`, `X-Content-Type-Options` e HSTS.
 5. **`<meta name="referrer" content="no-referrer">`** no `app.html`. Vale mesmo em hosts que não permitem cabeçalhos.
 6. **Zero recursos de terceiros:** fontes, scripts e imagens vêm do próprio site, e não há analytics. Os testes E2E verificam isso.

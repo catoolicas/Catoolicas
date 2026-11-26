@@ -71,3 +71,41 @@ export function progresso(sequencia: readonly Passo[], indice: number): Progress
 	});
 	return { passo: atual + 1, total: sequencia.length, avesRezadas, totalAves };
 }
+
+/**
+ * Posição equivalente numa nova sequência, quando uma preferência muda a lista de passos
+ * (por exemplo, menos jaculatórias). Procura, nesta ordem: o mesmo passo (mesma dezena,
+ * tipo, conta, oração ou jaculatória); o anúncio da mesma dezena; o passo de mesmo índice.
+ */
+export function passoEquivalente(
+	antiga: readonly Passo[],
+	indice: number,
+	nova: readonly Passo[]
+): number {
+	const atual = antiga[limitar(antiga, indice)];
+	if (!atual || nova.length === 0) return 0;
+	const chave = (p: Passo): string => {
+		switch (p.tipo) {
+			case 'oracao':
+				return `oracao:${p.parte}:${p.oracao}:${p.vez}`;
+			case 'ave-maria':
+				return `ave:${p.dezena.indice}:${p.conta}`;
+			case 'jaculatoria':
+				return `jac:${p.dezena.indice}:${p.jaculatoria}`;
+			case 'oracao-final-serie':
+				return `final:${p.serie}`;
+			default:
+				return `${p.tipo}:${p.dezena.indice}`;
+		}
+	};
+	const procurada = chave(atual);
+	const mesmo = nova.findIndex((p) => chave(p) === procurada);
+	if (mesmo !== -1) return mesmo;
+	if ('dezena' in atual) {
+		const anuncio = nova.findIndex(
+			(p) => p.tipo === 'anuncio' && p.dezena.indice === atual.dezena.indice
+		);
+		if (anuncio !== -1) return anuncio;
+	}
+	return limitar(nova, indice);
+}

@@ -38,6 +38,22 @@
 
 	/* Movimento */
 	--duracao-curta: 150ms;
+
+	/* Acento da série de mistérios (paleta do terco-diario); padrão: rubrica. */
+	--cor-serie: var(--cor-rubrica);
+}
+
+[data-serie='gozosos'] {
+	--cor-serie: #9c4426;
+}
+[data-serie='luminosos'] {
+	--cor-serie: #8e6620;
+}
+[data-serie='dolorosos'] {
+	--cor-serie: #7c2233;
+}
+[data-serie='gloriosos'] {
+	--cor-serie: #1f3a63;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,6 +67,26 @@
 		--cor-filete: #3a332a;
 		--cor-foco: #9cc2ff;
 	}
+}
+
+@media (prefers-color-scheme: dark) {
+	[data-serie='gozosos'] {
+		--cor-serie: #e08a63;
+	}
+	[data-serie='luminosos'] {
+		--cor-serie: #d9ae55;
+	}
+	[data-serie='dolorosos'] {
+		--cor-serie: #d4697f;
+	}
+	[data-serie='gloriosos'] {
+		--cor-serie: #7fa6dc;
+	}
+}
+
+/* Páginas do Terço: duas colunas (contas e texto) em telas largas; cabeçalho e rodapé acompanham. */
+body:has(.terco) {
+	--largura-pagina: 60rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -111,6 +147,11 @@ a {
 
 a:hover {
 	color: var(--cor-rubrica);
+}
+
+input[type='radio'],
+input[type='checkbox'] {
+	accent-color: var(--cor-serie);
 }
 
 :focus-visible {

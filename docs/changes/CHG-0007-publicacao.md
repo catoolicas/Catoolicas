@@ -1,6 +1,6 @@
 # CHG-0007 — Publicação no GitHub Pages (parte 1: workflow)
 
-- **Status:** implementada; aguardando a ativação do Pages e a primeira publicação
+- **Status:** implementada e **publicada**: https://catoolicas.github.io/Catoolicas/
 - **Marco:** M3 (publicação web)
 - **Pedido:** responsáveis, 26/11/2026 ("criar o workflow para postagem no GitHub Pages")
 
@@ -57,7 +57,15 @@ Executada em 26/11/2026, no ambiente de desenvolvimento, com Node 22.23.5 e Chro
 | Build e E2E com **`BASE_PATH=/Catoolicas`** (como no Pages) | 30/30. Links internos, CSP, acessibilidade e `aria-current` funcionam sob o subcaminho. |
 | Orçamento                                                   | Respeitado nos dois modos                                                               |
 
-O workflow `pages.yml` em si **ainda não foi executado**. A primeira execução depende do pré-requisito 1, e só ela comprova a publicação de verdade.
+**Primeira publicação** ([run 45851594605](https://github.com/catoolicas/Catoolicas/actions/runs/45851594605)), em 26/11/2026:
+
+1. Na primeira tentativa, `verificar` e `construir` passaram, mas o job `publicar` foi recusado antes de começar (sem executor e sem log).
+   - Causa provável, não confirmada por log: a regra de proteção do ambiente `github-pages`, que só aceitava o branch padrão de então.
+2. Depois do ajuste das configurações pelos responsáveis, só o job que falhou foi reexecutado, e passou.
+3. Verificado com `curl`:
+   - `https://catoolicas.github.io/Catoolicas/` e `/Catoolicas/sobre/` respondem 200, com `lang="pt-BR"` e a CSP na `<meta>`;
+   - `/Catoolicas/sobre` (sem barra) redireciona com 301, comportamento do próprio GitHub Pages;
+   - `favicon.svg` responde 200.
 
 ## Riscos e pendências
 

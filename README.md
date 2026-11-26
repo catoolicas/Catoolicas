@@ -6,7 +6,7 @@ Plataforma católica livre: ferramentas para a oração, o exame de consciência
 - Conteúdo com procedência verificável.
 - "Catoolicas" é o nome de trabalho.
 
-> **Status:** em desenvolvimento. A fundação técnica está pronta (CHG-0001). O Terço e o Exame de consciência estão em construção.
+> **Status:** em desenvolvimento, publicado em https://catoolicas.github.io/Catoolicas/. O Terço já funciona (CHG-0004a); a identidade visual (CHG-0004b) e o Exame de consciência estão em construção.
 
 ## Fases
 

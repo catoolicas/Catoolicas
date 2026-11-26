@@ -25,6 +25,13 @@ export default defineConfig({
 					'default-src': ['self'],
 					'script-src': ['self'],
 					'style-src': ['self'],
+					// Único estilo inline permitido: o do anunciador de rotas do SvelteKit
+					// (div#svelte-announcer em runtime/components/root.svelte). Autorizado por hash, sem
+					// 'unsafe-inline'; se o SvelteKit mudar esse estilo, os testes E2E acusam a violação.
+					'style-src-attr': [
+						'unsafe-hashes',
+						'sha256-S8qMpvofolR8Mpjy4kQvEm7m1q8clzU4dfDH0AmvZjo='
+					],
 					'img-src': ['self'],
 					'font-src': ['self'],
 					'connect-src': ['self'],

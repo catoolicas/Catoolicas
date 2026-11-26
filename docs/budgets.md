@@ -55,6 +55,30 @@ Ambiente: Node 22.23.5, pnpm 12.23.0, SvelteKit 3.4.0, Svelte 5.59.1, Vite 8.3.8
 | `index.html`       | 1.266 B     | 0 B               | 1.440 B    |
 | `sobre/index.html` | 1.806 B     | 0 B               | 1.301 B    |
 
+### 26/11/2026 — CHG-0004a (interface do Terço)
+
+**JS declarado no HTML** (`pnpm budget`):
+
+| Página                     | HTML (gzip) | JS inicial (gzip) | CSS (gzip) |
+| -------------------------- | ----------- | ----------------- | ---------- |
+| `index.html`               | 1.381 B     | 0 B               | 1.601 B    |
+| `sobre/index.html`         | 1.973 B     | 0 B               | 1.462 B    |
+| `terco/index.html`         | 2.103 B     | 46.396 B          | 1.837 B    |
+| `terco/<série>/index.html` | ~3.535 B    | 58.427 B          | 2.842 B    |
+| `terco/rosario/index.html` | 3.559 B     | 58.357 B          | 2.842 B    |
+
+**JS realmente baixado:** soma, com gzip -9, de todo `.js` recebido até a rede ficar ociosa. Inclui o conteúdo da série, carregado sob demanda, que o script estático não enxerga. Medido no E2E (`tests/e2e/terco.e2e.ts`, Chromium):
+
+| Página            | Medido  | Limite do teste |
+| ----------------- | ------- | --------------- |
+| `/terco/`         | 45,6 KB | 50 KB           |
+| `/terco/gozosos/` | 63,8 KB | 70 KB           |
+| `/terco/rosario/` | 78,5 KB | 90 KB           |
+
+- **Limites novos em `scripts/budgets.json`:** 60 KB de JS declarado para as páginas do Terço, a meta prevista na rev. 1 para a interface completa.
+- **Por que há duas medições:** o script estático não vê o conteúdo carregado sob demanda.
+- **Otimização possível** [FUT]: separar o latim do português.
+
 ### Referência externa (para comparação, não é meta)
 
 | Artefato                                                         | Tamanho     |
