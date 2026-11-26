@@ -1,0 +1,11 @@
+# Licenciamento por caminho, no padrão REUSE (https://reuse.software).
+# Código, configuração e documentação do projeto: GPL-3.0-or-later.
+# Conteúdo de terceiros (textos religiosos, imagens, fontes) receberá anotações próprias,
+# com a licença e a procedência de cada fonte (docs/adr/0003-conteudo-separado.md).
+version = 1
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>"
+SPDX-License-Identifier = "GPL-3.0-or-later"

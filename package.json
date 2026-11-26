@@ -1,0 +1,57 @@
+{
+	"name": "catoolicas",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Plataforma católica livre: ferramentas para oração, exame de consciência, estudo e vida de fé.",
+	"license": "GPL-3.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/catoolicas/Catoolicas"
+	},
+	"type": "module",
+	"packageManager": "pnpm@12.23.0",
+	"engines": {
+		"node": ">=22.18"
+	},
+	"imports": {
+		"#lib": "./src/lib/index.js",
+		"#lib/*": "./src/lib/*"
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview --port 4173 --strictPort",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write .",
+		"test:unit": "vitest --run",
+		"test:unit:watch": "vitest",
+		"test:e2e": "playwright test",
+		"budget": "node scripts/check-budget.ts",
+		"licenses:check": "node scripts/check-licenses.ts",
+		"verify": "pnpm check && pnpm lint && pnpm test:unit && pnpm build && pnpm budget && pnpm licenses:check && pnpm test:e2e"
+	},
+	"devDependencies": {
+		"@axe-core/playwright": "^4.14.1",
+		"@eslint/js": "^10.0.1",
+		"@playwright/test": "^1.65.1",
+		"@sveltejs/adapter-static": "^4.0.1",
+		"@sveltejs/kit": "^3.2.0",
+		"@sveltejs/vite-plugin-svelte": "^7.3.1",
+		"@types/node": "^22",
+		"eslint": "^10.15.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.24.1",
+		"globals": "^17.14.0",
+		"prettier": "^3.10.1",
+		"prettier-plugin-svelte": "^4.1.1",
+		"svelte": "^5.57.3",
+		"svelte-check": "^4.7.8",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.72.2",
+		"vite": "^8.3.8",
+		"vitest": "^5.1.0"
+	}
+}

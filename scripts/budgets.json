@@ -1,0 +1,12 @@
+{
+	"$comment": "Metas PROPOSTAS (não medições), em bytes gzip nível 9. Medições e justificativas em docs/budgets.md. Páginas sem interatividade são entregues sem JS (csr = false): limite 0.",
+	"padrao": {
+		"htmlGzip": 30720,
+		"jsGzip": 35840,
+		"cssGzip": 15360
+	},
+	"paginas": {
+		"index.html": { "jsGzip": 0 },
+		"sobre.html": { "jsGzip": 0 }
+	}
+}

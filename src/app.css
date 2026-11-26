@@ -1,0 +1,138 @@
+/*
+ * Tokens de design e estilos de base.
+ * Direção: "livro de orações digital" — tipografia em primeiro plano, papel e tinta,
+ * rubricas em vermelho. Nenhuma fonte é baixada nesta fase: usamos as fontes do sistema.
+ * Cores escolhidas para contraste ≥ 4.5:1 sobre o fundo nos dois temas (verificado pelo axe nos testes E2E).
+ */
+
+:root {
+	color-scheme: light dark;
+
+	/* Cores — tema claro */
+	--cor-papel: #fbf8f1;
+	--cor-papel-2: #f3eee2;
+	--cor-tinta: #1f1b16;
+	--cor-tinta-suave: #554d45;
+	--cor-rubrica: #8b1e17;
+	--cor-ouro: #9c7a3c; /* só decorativo: nunca usar para texto */
+	--cor-filete: #d9d0c1;
+	--cor-foco: #1f4e8c;
+
+	/* Tipografia */
+	--fonte-ui:
+		system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+	--fonte-texto:
+		'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Noto Serif', serif;
+	--tam-base: 1rem;
+	--tam-texto: 1.125rem;
+	--entrelinha: 1.6;
+
+	/* Espaçamento e medidas */
+	--espaco-1: 0.25rem;
+	--espaco-2: 0.5rem;
+	--espaco-3: 1rem;
+	--espaco-4: 1.5rem;
+	--espaco-5: 2.5rem;
+	--largura-texto: 40rem;
+	--margem-lateral: 1rem;
+
+	/* Movimento */
+	--duracao-curta: 150ms;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--cor-papel: #16130f;
+		--cor-papel-2: #211c17;
+		--cor-tinta: #ece5d8;
+		--cor-tinta-suave: #b9af9f;
+		--cor-rubrica: #e59a90;
+		--cor-ouro: #c9a45c;
+		--cor-filete: #3a332a;
+		--cor-foco: #9cc2ff;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--cor-papel);
+	color: var(--cor-tinta);
+	font-family: var(--fonte-ui);
+	font-size: var(--tam-base);
+	line-height: var(--entrelinha);
+}
+
+.app-root {
+	display: contents;
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--fonte-texto);
+	font-weight: 600;
+	line-height: 1.25;
+	text-wrap: balance;
+}
+
+p,
+li {
+	text-wrap: pretty;
+}
+
+a {
+	color: inherit;
+	text-decoration-color: var(--cor-rubrica);
+	text-decoration-thickness: 0.08em;
+	text-underline-offset: 0.18em;
+}
+
+a:hover {
+	color: var(--cor-rubrica);
+}
+
+:focus-visible {
+	outline: 3px solid var(--cor-foco);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+/* Instruções (rubricas) em vermelho e itálico: a cor nunca é o único sinal. */
+.rubrica {
+	color: var(--cor-rubrica);
+	font-style: italic;
+}
+
+.visualmente-oculto {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
