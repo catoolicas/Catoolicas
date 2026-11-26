@@ -2,8 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 
 const ROTAS = [
-	{ caminho: '/', h1: 'Catoolicas', linkAtual: 'Início' },
-	{ caminho: '/sobre/', h1: 'Sobre o projeto', linkAtual: 'Sobre' }
+	{ caminho: './', h1: 'Catoolicas', linkAtual: 'Início' },
+	{ caminho: './sobre/', h1: 'Sobre o projeto', linkAtual: 'Sobre' }
 ] as const;
 
 // Meta do projeto: WCAG 2.2 nível AA.
@@ -117,7 +117,7 @@ test('o link "pular para o conteúdo" é o primeiro foco e leva ao conteúdo pri
 	page,
 	browserName
 }) => {
-	await page.goto('/');
+	await page.goto('./');
 	const pular = page.getByRole('link', { name: 'Pular para o conteúdo' });
 
 	await page.keyboard.press('Tab');

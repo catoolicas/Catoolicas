@@ -1,16 +1,21 @@
 # Verificação em ambiente limpo a cada push e pull request.
 # Ordem: tipos → lint → unitários → build → orçamento → licenças → REUSE → E2E contra o build.
+# Também é chamado pelo workflow de publicação (pages.yml), que o executa antes de publicar;
+# por isso pushes em `main` não disparam este workflow diretamente.
 name: CI
 
 on:
   push:
+    branches-ignore: [main]
   pull_request:
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
+  # github.workflow é o nome do workflow chamador quando este é reutilizado: grupos distintos.
+  group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:

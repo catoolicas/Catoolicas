@@ -38,6 +38,18 @@
    - URL de API configurável quando houver API.
    - Testes E2E também em WebKit.
 
+## Hospedagem (decidida em 26/11/2026)
+
+- **GitHub Pages**, publicado pelo workflow `.github/workflows/pages.yml`, que:
+  1. roda o CI inteiro (reutilizado);
+  2. faz o build com o subcaminho de produção (`BASE_PATH`, por exemplo `/Catoolicas`, obtido de `actions/configure-pages`);
+  3. roda de novo o orçamento e os testes E2E **contra o artefato que será publicado**, servido sob esse subcaminho;
+  4. só então publica.
+- **Limitações aceitas do GitHub Pages:**
+  - não permite cabeçalhos HTTP próprios. A CSP vale pela `<meta>` do HTML, e `frame-ancestors`, `Permissions-Policy` e HSTS próprios não ficam disponíveis;
+  - o GitHub registra o IP de quem visita, por segurança. Isso está informado na página "Sobre", com link para a documentação.
+- **Reversível:** a saída é estática, e trocar de host não exige mudar o código.
+
 ## Alternativas consideradas
 
 | Alternativa                           | Por que não                                                                                                                           |

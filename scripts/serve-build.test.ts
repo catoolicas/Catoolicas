@@ -35,6 +35,18 @@ describe('resolverArquivo', () => {
 		expect(resolverArquivo(raiz, '/sobre/..%2f..%2fetc%2fpasswd')).toBeNull();
 	});
 
+	it('com subcaminho, serve só o que está dentro dele (como no GitHub Pages)', () => {
+		expect(resolverArquivo(raiz, '/Catoolicas/', '/Catoolicas')).toBe(join(raiz, 'index.html'));
+		expect(resolverArquivo(raiz, '/Catoolicas/sobre/', '/Catoolicas')).toBe(
+			join(raiz, 'sobre', 'index.html')
+		);
+		expect(resolverArquivo(raiz, '/', '/Catoolicas')).toBeNull();
+		expect(resolverArquivo(raiz, '/sobre/', '/Catoolicas')).toBeNull();
+		expect(resolverArquivo(raiz, '/Catoolicas', '/Catoolicas')).toBeNull();
+		expect(resolverArquivo(raiz, '/CatoolicasX/', '/Catoolicas')).toBeNull();
+		expect(resolverArquivo(raiz, '/Catoolicas/../../etc/passwd', '/Catoolicas')).toBeNull();
+	});
+
 	it('recusa caminhos malformados', () => {
 		expect(resolverArquivo(raiz, '/%E0%A4%A')).toBeNull();
 		expect(resolverArquivo(raiz, '/index.html%00.txt')).toBeNull();

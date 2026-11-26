@@ -13,6 +13,9 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter({ strict: true }),
+			// Subcaminho de publicação (por exemplo, `/Catoolicas` no GitHub Pages sem domínio próprio).
+			// Vazio no desenvolvimento e nos testes locais; o workflow de publicação define BASE_PATH.
+			paths: { base: (process.env.BASE_PATH ?? '') as '' | `/${string}` },
 			// Em páginas pré-renderizadas a CSP vai numa <meta http-equiv>; nesse caso
 			// frame-ancestors, report-uri e sandbox são ignorados e devem vir por cabeçalho
 			// do host (ver docs/adr/0002-estatico-primeiro.md).

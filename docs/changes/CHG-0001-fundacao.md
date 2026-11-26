@@ -1,8 +1,10 @@
 # CHG-0001 — Fundação do projeto
 
-- **Status:** implementada localmente; revisada e corrigida na [CHG-0001b](CHG-0001b-revisao-e-decisoes.md); push e CI bloqueados por falta de acesso ao GitHub
+- **Status:** implementada; revisada e corrigida na [CHG-0001b](CHG-0001b-revisao-e-decisoes.md); CI verde
 - **Marco:** M0
 - **Branch:** `claude/quirky-lovelace-1cp3q1`
+
+> **Atualização (26/11/2026):** o acesso ao GitHub foi liberado. O [CI #1](https://github.com/catoolicas/Catoolicas/actions/runs/45849014795), no commit `59abb1c` (que contém CHG-0001 a CHG-0003), passou em todas as etapas, em cerca de 2 minutos. Isso verifica no CI a instalação a frio, o Node 26, o REUSE e os testes E2E em **Chromium, Firefox e WebKit** (desktop e móvel). As ressalvas "não verificado" abaixo ficam superadas.
 
 ## Problema
 

@@ -65,6 +65,20 @@ Rode a verificação completa (tipos, lint, unitários, build, orçamento, licen
 pnpm verify
 ```
 
+## Publicação
+
+O site é publicado no GitHub Pages pelo workflow `.github/workflows/pages.yml`. Ele só publica depois de passar por:
+
+- todo o CI;
+- os testes E2E contra o próprio artefato a publicar.
+
+Para publicar:
+
+1. **Uma vez:** em _Settings → Pages_, escolha _Source: GitHub Actions_.
+2. Faça push ou merge em `main`, ou rode o workflow em _Actions → Publicar no GitHub Pages → Run workflow_.
+
+Detalhes em [`docs/changes/CHG-0007-publicacao.md`](docs/changes/CHG-0007-publicacao.md).
+
 ## Estrutura
 
 | Caminho            | Conteúdo                                                                             |

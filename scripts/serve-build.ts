@@ -8,7 +8,9 @@
  *   Assim, um link interno sem a barra final falha no teste em vez de passar despercebido.
  *
  * Diferente do `vite preview`, que serve `.svelte-kit/output` e resolve URLs sem extensão.
- * Uso: node scripts/serve-build.ts [porta]
+ * Uso: node scripts/serve-build.ts [porta] [subcaminho]
+ * Com subcaminho (por exemplo, `/Catoolicas`, como no GitHub Pages), só URLs dentro dele são
+ * servidas, como acontecerá em produção.
  */
 import { createReadStream, realpathSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -33,12 +35,16 @@ const TIPOS: Readonly<Record<string, string>> = {
  * Converte o caminho da URL no arquivo a servir, ou `null` se não houver arquivo
  * correspondente (ou se o caminho tentar sair da raiz).
  */
-export function resolverArquivo(raiz: string, caminhoUrl: string): string | null {
+export function resolverArquivo(raiz: string, caminhoUrl: string, base = ''): string | null {
 	let decodificado: string;
 	try {
 		decodificado = decodeURIComponent(caminhoUrl.split('?')[0]?.split('#')[0] ?? '/');
 	} catch {
 		return null;
+	}
+	if (base) {
+		if (!decodificado.startsWith(`${base}/`)) return null;
+		decodificado = decodificado.slice(base.length);
 	}
 	if (decodificado.includes('\0')) return null;
 
@@ -57,9 +63,10 @@ export function resolverArquivo(raiz: string, caminhoUrl: string): string | null
 function principal(): void {
 	const raiz = resolve(fileURLToPath(new URL('..', import.meta.url)), 'build');
 	const porta = Number(process.argv[2] ?? 4173);
+	const base = process.argv[3] ?? '';
 
 	createServer((req, res) => {
-		const arquivo = resolverArquivo(raiz, req.url ?? '/');
+		const arquivo = resolverArquivo(raiz, req.url ?? '/', base);
 		if (!arquivo || (req.method !== 'GET' && req.method !== 'HEAD')) {
 			res.writeHead(arquivo ? 405 : 404, { 'content-type': 'text/plain; charset=utf-8' });
 			res.end(arquivo ? 'Método não permitido' : 'Não encontrado');
@@ -72,7 +79,7 @@ function principal(): void {
 		if (req.method === 'HEAD') res.end();
 		else createReadStream(arquivo).pipe(res);
 	}).listen(porta, 'localhost', () => {
-		console.log(`Servindo ${raiz} em http://localhost:${porta}/`);
+		console.log(`Servindo ${raiz} em http://localhost:${porta}${base}/`);
 	});
 }
 

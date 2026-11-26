@@ -6,11 +6,11 @@
 
 	let { children }: LayoutProps = $props();
 
-	// `rota` é comparada com page.url.pathname; `href` é relativo (paths.relative),
-	// por isso não serve para saber qual é a página atual.
+	// A página atual é identificada pela rota (page.route.id), que não muda com o subcaminho
+	// de publicação nem com a barra final; `href` é relativo (paths.relative).
 	const links = [
 		{ rota: '/', href: resolve('/'), rotulo: 'Início' },
-		{ rota: '/sobre/', href: resolve('sobre/'), rotulo: 'Sobre' }
+		{ rota: '/sobre', href: resolve('sobre/'), rotulo: 'Sobre' }
 	];
 </script>
 
@@ -23,7 +23,7 @@
 			<ul>
 				{#each links as link (link.rota)}
 					<li>
-						<a href={link.href} aria-current={page.url.pathname === link.rota ? 'page' : undefined}>
+						<a href={link.href} aria-current={page.route.id === link.rota ? 'page' : undefined}>
 							{link.rotulo}
 						</a>
 					</li>

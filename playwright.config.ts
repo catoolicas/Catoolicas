@@ -7,6 +7,8 @@ import { defineConfig, devices } from '@playwright/test';
 // PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH permite usar um Chromium já instalado no ambiente
 // (por exemplo, em contêineres de desenvolvimento) em vez do baixado pelo Playwright.
 const chromiumPath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
+// Mesmo subcaminho usado no build (BASE_PATH), para testar o artefato exatamente como será publicado.
+const base = process.env.BASE_PATH ?? '';
 const chromiumLaunch = chromiumPath ? { launchOptions: { executablePath: chromiumPath } } : {};
 
 export default defineConfig({
@@ -16,11 +18,11 @@ export default defineConfig({
 	retries: 0,
 	reporter: process.env.CI ? [['list'], ['github']] : 'list',
 	use: {
-		baseURL: 'http://localhost:4173',
+		baseURL: `http://localhost:4173${base}/`,
 		trace: 'off'
 	},
 	webServer: {
-		command: 'node scripts/serve-build.ts 4173',
+		command: `node scripts/serve-build.ts 4173 ${base}`,
 		port: 4173,
 		reuseExistingServer: !process.env.CI
 	},

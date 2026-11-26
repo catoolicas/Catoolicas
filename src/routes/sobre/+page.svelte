@@ -31,8 +31,15 @@
 			navegador.
 		</li>
 		<li>
-			Como em qualquer site, o serviço de hospedagem pode registrar dados técnicos de acesso, como
-			endereço IP e página visitada. A política do provedor será informada aqui antes da publicação.
+			O site é hospedado no GitHub Pages. Segundo a
+			<a
+				href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection"
+				rel="external noopener noreferrer"
+			>
+				documentação do GitHub
+			</a>, o endereço IP de quem visita é registrado e guardado pelo GitHub por motivos de
+			segurança. Esse registro é do GitHub, não deste projeto, e não inclui nada do que você faz
+			dentro das páginas.
 		</li>
 	</ul>
 </section>
