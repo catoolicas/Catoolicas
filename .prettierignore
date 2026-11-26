@@ -10,3 +10,4 @@ bun.lockb
 
 # Gerado por `pnpm exame:rascunhos` (um teste confere que está em dia com os dados)
 docs/editorial/exame-rascunhos.md
+content/exame/rascunhos-aprovados.ts

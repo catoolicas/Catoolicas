@@ -8,11 +8,17 @@
 
 	// A página atual é identificada pela rota (page.route.id), que não muda com o subcaminho
 	// de publicação nem com a barra final; `href` é relativo (paths.relative).
+	// `recarregar`: o Exame abre sempre com carga completa da página (ADR-0004), para começar do
+	// zero e já com a política de segurança própria dele.
 	const links = [
-		{ rota: '/', href: resolve('/'), rotulo: 'Início' },
-		{ rota: '/terco', href: resolve('terco/'), rotulo: 'Terço' },
-		{ rota: '/sobre', href: resolve('sobre/'), rotulo: 'Sobre' }
+		{ rota: '/', href: resolve('/'), rotulo: 'Início', recarregar: false },
+		{ rota: '/terco', href: resolve('terco/'), rotulo: 'Terço', recarregar: false },
+		{ rota: '/exame', href: resolve('exame/'), rotulo: 'Exame', recarregar: true },
+		{ rota: '/sobre', href: resolve('sobre/'), rotulo: 'Sobre', recarregar: false }
 	];
+
+	// Saindo do Exame, todo link também recarrega a página: a memória dele é descartada inteira.
+	const recarregarTudo = $derived(page.route.id === '/exame' ? '' : undefined);
 
 	/** "page" na própria página; "true" nas páginas internas da seção (por exemplo, uma série). */
 	function atual(rota: string): 'page' | 'true' | undefined {
@@ -25,14 +31,18 @@
 
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-<header class="cabecalho">
+<header class="cabecalho" data-sveltekit-reload={recarregarTudo}>
 	<div class="cabecalho-interno">
 		<a class="marca" href={resolve('/')}>Catoolicas</a>
 		<nav aria-label="Principal">
 			<ul>
 				{#each links as link (link.rota)}
 					<li>
-						<a href={link.href} aria-current={atual(link.rota)}>
+						<a
+							href={link.href}
+							aria-current={atual(link.rota)}
+							data-sveltekit-reload={link.recarregar ? '' : undefined}
+						>
 							{link.rotulo}
 						</a>
 					</li>
@@ -42,11 +52,11 @@
 	</div>
 </header>
 
-<main id="conteudo" tabindex="-1">
+<main id="conteudo" tabindex="-1" data-sveltekit-reload={recarregarTudo}>
 	{@render children()}
 </main>
 
-<footer class="rodape">
+<footer class="rodape" data-sveltekit-reload={recarregarTudo}>
 	<p>
 		Software livre sob a licença
 		<a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="external noopener noreferrer">
@@ -103,7 +113,8 @@
 
 	nav ul {
 		display: flex;
-		gap: var(--espaco-2);
+		flex-wrap: wrap;
+		gap: 0 var(--espaco-2);
 		margin: 0;
 		padding: 0;
 		list-style: none;

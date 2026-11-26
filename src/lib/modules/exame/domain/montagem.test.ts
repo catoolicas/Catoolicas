@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ITENS_RASCUNHO, SECOES_RASCUNHO } from '#content/exame/rascunhos.ts';
 import { SECOES } from '#content/exame/secoes.ts';
-import { montarExame } from './montagem.ts';
+import { montarExame, soAprovados, type ItemRascunho } from './montagem.ts';
 
 describe('montarExame — porta editorial', () => {
 	it('em produção mostra só o que está aprovado: a base intacta, sem nenhum rascunho', () => {
@@ -36,5 +36,31 @@ describe('montarExame — porta editorial', () => {
 		expect(() => montarExame(SECOES, [], [errado], { incluirRascunhos: true })).toThrow(
 			/seção inexistente/
 		);
+	});
+});
+
+describe('soAprovados — o que pode ir para o site publicado', () => {
+	it('hoje, com todos os rascunhos em revisão, não sobra nada', () => {
+		expect(soAprovados(SECOES_RASCUNHO, ITENS_RASCUNHO)).toEqual({ secoes: [], itens: [] });
+	});
+
+	it('leva só os itens aprovados, e uma seção nova só se ela e algum item estiverem aprovados', () => {
+		const [secao] = SECOES_RASCUNHO;
+		if (!secao) throw new Error('sem seção de rascunho');
+		const [primeiro, ...resto] = secao.itens;
+		if (!primeiro) throw new Error('seção sem itens');
+		const secaoAprovada = {
+			...secao,
+			status: 'aprovado' as const,
+			itens: [{ ...primeiro, status: 'aprovado' as const }, ...resto]
+		};
+		const [primeiroItem] = ITENS_RASCUNHO;
+		if (!primeiroItem) throw new Error('sem itens de rascunho');
+		const item: ItemRascunho = { ...primeiroItem, status: 'aprovado' };
+		const r = soAprovados([secaoAprovada], [item, ...ITENS_RASCUNHO.slice(1)]);
+		expect(r.secoes.map((s) => s.itens.map((i) => i.id))).toEqual([[primeiro.id]]);
+		expect(r.itens.map((i) => i.id)).toEqual([item.id]);
+		// Seção ainda em revisão: nem os itens aprovados dela saem.
+		expect(soAprovados([{ ...secaoAprovada, status: 'em-revisao' }], []).secoes).toEqual([]);
 	});
 });

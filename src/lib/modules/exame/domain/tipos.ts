@@ -71,3 +71,16 @@ export type Roteiro = {
 	readonly procedencia: Procedencia;
 	readonly status: StatusEditorial;
 };
+
+/** Textos fixos da interface do exame que vêm da base (títulos e avisos). */
+export type TextosInterface = {
+	readonly titulo: string;
+	readonly subtitulo: string;
+	readonly antesDeComecar: string;
+	readonly minhaLista: string;
+	readonly naoGravado: string;
+	readonly destruirFolha: string;
+	readonly rotuloVezes: string;
+	readonly procedencia: Procedencia;
+	readonly status: StatusEditorial;
+};

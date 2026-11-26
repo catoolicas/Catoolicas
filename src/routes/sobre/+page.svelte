@@ -27,8 +27,13 @@
 		<li>Não usamos cookies nem ferramentas de análise de audiência.</li>
 		<li>Não carregamos recursos de terceiros: fontes, scripts e imagens vêm do próprio site.</li>
 		<li>
-			Quando houver preferências (por exemplo, tamanho do texto), elas ficarão apenas no seu
-			navegador.
+			No Terço, as preferências e o ponto em que você parou ficam apenas neste navegador, e só
+			depois que você avança ou muda uma preferência. O botão "Apagar dados deste aparelho", nas
+			Preferências, apaga tudo.
+		</li>
+		<li>
+			No Exame de consciência, nada do que você marca ou escreve é enviado ou gravado: fica só na
+			memória da página e se apaga ao fechá-la, recarregá-la ou sair dela.
 		</li>
 		<li>
 			O site é hospedado no GitHub Pages. Segundo a

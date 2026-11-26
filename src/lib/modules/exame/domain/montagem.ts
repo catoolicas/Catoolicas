@@ -50,3 +50,22 @@ export function montarExame(
 		.map(comRascunhos)
 		.filter((s) => s.itens.length > 0);
 }
+
+/**
+ * Só os rascunhos aprovados, com a mesma regra de `montarExame`: uma seção nova precisa estar
+ * aprovada e leva só os seus itens aprovados. Gera `content/exame/rascunhos-aprovados.ts`, o único
+ * arquivo de rascunhos que o site publicado importa (o `rascunhos.ts` completo fica fora do build).
+ */
+export function soAprovados(
+	secoesRascunho: readonly SecaoExame[],
+	itensRascunho: readonly ItemRascunho[]
+): { secoes: SecaoExame[]; itens: ItemRascunho[] } {
+	const aprovado = (x: { readonly status: string }) => x.status === 'aprovado';
+	return {
+		secoes: secoesRascunho
+			.filter(aprovado)
+			.map((s) => ({ ...s, itens: s.itens.filter(aprovado) }))
+			.filter((s) => s.itens.length > 0),
+		itens: itensRascunho.filter(aprovado)
+	};
+}

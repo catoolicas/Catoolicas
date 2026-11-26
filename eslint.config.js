@@ -5,6 +5,7 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
+import { ARQUIVOS_DO_EXAME, REGRAS_DE_PRIVACIDADE } from './scripts/eslint-privacidade.ts';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 
@@ -41,8 +42,10 @@ export default defineConfig(
 		}
 	},
 	{
-		// Override or add rule settings here, such as:
-		// 'svelte/button-has-type': 'error'
-		rules: {}
+		// Exame de consciência: nada sai da memória da página (docs/adr/0004-privacidade-exame.md).
+		// Os testes unitários rodam no Node, não no navegador, e ficam de fora.
+		files: ARQUIVOS_DO_EXAME,
+		ignores: ['**/*.test.ts'],
+		rules: REGRAS_DE_PRIVACIDADE
 	}
 );

@@ -26,8 +26,8 @@
 			a dezena, com as meditações de São Luís Maria Grignion de Montfort.
 		</li>
 		<li>
-			<strong>Exame de consciência</strong> — preparação para a confissão que funciona apenas no seu aparelho,
-			sem enviar nada a ninguém.
+			<a href={resolve('exame/')} data-sveltekit-reload><strong>Exame de consciência</strong></a> — preparação
+			para a confissão que funciona apenas no seu aparelho, sem enviar nada a ninguém.
 		</li>
 	</ul>
 </section>

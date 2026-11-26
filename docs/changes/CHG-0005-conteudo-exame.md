@@ -69,6 +69,7 @@ Vem do `terco-diario@e4cbfd6`, por extração estática, sem alteração de text
 1. Ler `docs/editorial/exame-rascunhos.md`.
 2. No PR, para cada item: aprovar (trocar `status` para `aprovado` em `content/exame/rascunhos.ts`), pedir ajuste de texto, gravidade ou nota, ou remover.
 3. Rodar `pnpm exame:rascunhos` para atualizar a tabela. O teste avisa se alguém esquecer.
+   - Desde a CHG-0006, o mesmo comando gera `content/exame/rascunhos-aprovados.ts`, o único arquivo de rascunhos que o site publicado importa.
 
 ## Validação
 

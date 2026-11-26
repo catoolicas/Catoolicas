@@ -32,9 +32,9 @@ SPDX-FileCopyrightText = [
 ]
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
-# Rascunhos assistidos do Exame: redação do projeto, não do terco-diario.
+# Rascunhos assistidos do Exame (e o arquivo gerado com os aprovados): redação do projeto, não do terco-diario.
 [[annotations]]
-path = "content/exame/rascunhos.ts"
+path = ["content/exame/rascunhos.ts", "content/exame/rascunhos-aprovados.ts"]
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>"
 SPDX-License-Identifier = "GPL-3.0-or-later"

@@ -11,6 +11,7 @@ const imp = (f) => import(pathToFileURL(join(raiz, 'content/exame', f)).href);
 const { SECOES } = await imp('secoes.ts');
 const { ORIENTACOES, ORACAO_INICIAL, ROTEIRO } = await imp('orientacoes.ts');
 const { ATOS } = await imp('atos.ts');
+const { TEXTOS } = await imp('interface.ts');
 
 let ok = 0;
 const erros = [];
@@ -70,6 +71,11 @@ penit.forEach((p, i) => {
 	igual(ATOS[i].texto, p.txt, `ato.${p.id}.txt`);
 });
 igual(ATOS.find((a) => a.id === 'contricao')?.texto, d.EX_ATO, 'EX_ATO');
+// Textos da interface (CHG-0006): cada um aparece literalmente no index.html.
+for (const [campo, t] of Object.entries(TEXTOS)) {
+	if (typeof t === 'string' && campo !== 'status')
+		igual(fonte.includes(t), true, `interface.${campo}`);
+}
 
 console.log(`conferências OK: ${ok}; divergências: ${erros.length}`);
 if (erros.length) {
