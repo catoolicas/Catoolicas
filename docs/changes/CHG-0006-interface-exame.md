@@ -186,6 +186,8 @@ Feita por um agente separado, com o requisito e o código, sem as conclusões de
 
 ## Riscos e pendências
 
+- **Teste de bfcache real:** só no Chromium, com o bfcache ligado e o canal `chromium`, que é o navegador completo sem janela. O primeiro CI (run 45904924724) mostrou que o "headless shell", padrão do Playwright, não restaura páginas do bfcache. No Firefox e no WebKit, o comportamento é coberto pelos eventos `pagehide`/`pageshow` simulados e pelo teste de voltar pelo histórico.
+
 - **Editoriais:** E12a (rascunhos), E19 (textos de interface), E20 (campos de descrição).
 - **Desenvolvimento:** na página do exame, o HMR do Vite é bloqueado pela CSP. É preciso recarregar à mão.
 - **Fora do alcance da página:** extensões, teclados que ignoram os pedidos, tradutores e impressão (aviso e checklist).

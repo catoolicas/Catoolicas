@@ -239,7 +239,7 @@ test.describe('Exame — privacidade', () => {
 	test('recarregar a página não restaura nada, nem a posição de rolagem', async ({ page }) => {
 		await abrir(page);
 		await preencher(page);
-		await page.mouse.wheel(0, 3000);
+		await page.evaluate(() => scrollTo(0, 3000)); // a roda do mouse não existe no WebKit móvel
 		await page.reload();
 		await expect(page.locator('.exame[data-hidratado]')).toBeAttached();
 		await esperarVazio(page);
@@ -253,9 +253,12 @@ test.describe('Exame — privacidade', () => {
 	}) => {
 		test.skip(browserName !== 'chromium', 'só no Chromium o Playwright permite ligar o bfcache');
 		test.setTimeout(60_000); // abre um Chromium próprio
-		// O Playwright desliga o bfcache do Chromium por padrão; aqui ele fica ligado.
+		// O Playwright desliga o bfcache do Chromium por padrão; aqui ele fica ligado. O "headless
+		// shell", usado por padrão, não restaura do bfcache: o canal `chromium` usa o navegador
+		// completo no modo sem janela (localmente, o executável indicado na variável de ambiente).
+		const executavel = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 		const navegador = await chromium.launch({
-			executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+			...(executavel ? { executablePath: executavel } : { channel: 'chromium' }),
 			ignoreDefaultArgs: ['--disable-back-forward-cache']
 		});
 		try {
