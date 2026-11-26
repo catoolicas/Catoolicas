@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { flushSync, onMount } from 'svelte';
-	import { ATOS, ORACAO_INICIAL, ORIENTACOES, ROTEIRO, TEXTOS } from '../conteudo.ts';
-	import { estadosPresentes } from '../domain/resumo.ts';
-	import type { EstadoDeVida, SecaoExame } from '../domain/tipos.ts';
-	import { EstadoExame } from '../state/exame.svelte.ts';
+	import {
+		ATOS,
+		ORACAO_INICIAL,
+		ORIENTACOES,
+		ROTEIRO,
+		TEXTOS
+	} from '#lib/modules/exame/conteudo.ts';
+	import { estadosPresentes } from '#lib/modules/exame/domain/resumo.ts';
+	import type { EstadoDeVida, SecaoExame } from '#lib/modules/exame/domain/tipos.ts';
+	import { EstadoExame } from '#lib/modules/exame/state/exame.svelte.ts';
 	import CaixaPrivada from './CaixaPrivada.svelte';
 	import ItemDoExame from './ItemDoExame.svelte';
 	import Privacidade from './Privacidade.svelte';
@@ -38,22 +44,53 @@
 		if (seletorAto) seletorAto.value = estado.ato;
 	});
 
-	/** Marca a hidratação (os testes esperam por ela antes de interagir). */
+	/**
+	 * Marca a hidratação. Antes dela (ou sem JavaScript), os campos ficam desativados: sem o código
+	 * da página, nada apagaria o que fosse marcado, e o navegador poderia guardá-lo (ADR-0004).
+	 */
 	let hidratado = $state(false);
 	onMount(() => {
 		hidratado = true;
 	});
+	const desativado = $derived(!hidratado);
 
+	/** Qualquer mudança tira a mensagem anterior ("Tudo foi apagado.") da tela. */
+	function mudou() {
+		aviso = '';
+	}
+
+	let temporizadorDoAviso: ReturnType<typeof setTimeout> | undefined;
 	function apagarTudo() {
 		estado.limpar();
-		aviso = 'Tudo foi apagado.';
+		// Esvazia e escreve de novo: o leitor de tela anuncia mesmo quando a mensagem se repete.
+		aviso = '';
+		clearTimeout(temporizadorDoAviso);
+		temporizadorDoAviso = setTimeout(() => (aviso = 'Tudo foi apagado.'), 100);
 	}
 
 	/** Zera o estado e já atualiza o DOM, antes de a página ir para o cache de navegação. */
 	function zerar() {
+		clearTimeout(temporizadorDoAviso);
 		estado.limpar();
 		aviso = '';
 		flushSync();
+	}
+
+	/**
+	 * Enquanto o exame está aberto, o roteador do SvelteKit não recebe estes eventos da janela:
+	 * - `beforeunload` e `visibilitychange` (aba escondida): ele gravaria no sessionStorage a posição
+	 *   de rolagem desta página, que diz em que parte do exame a pessoa estava;
+	 * - `focus` e `visibilitychange` (aba visível): ele buscaria `version.json` (a CSP bloqueia).
+	 * Ouvintes de captura na própria janela rodam antes dos do roteador. `beforeunload` tem o
+	 * documento como alvo (herança antiga dos navegadores), por isso é parado sem condição.
+	 */
+	function isolarDoRoteador(e: Event) {
+		e.stopImmediatePropagation();
+	}
+
+	/** O foco de um campo também passa pela captura da janela: só para o foco da própria janela. */
+	function isolarFocoDaJanela(e: FocusEvent) {
+		if (e.target === e.currentTarget) e.stopImmediatePropagation();
 	}
 
 	function aoMostrarPagina(e: PageTransitionEvent) {
@@ -67,7 +104,13 @@
 	}
 </script>
 
-<svelte:window onpagehide={zerar} onpageshow={aoMostrarPagina} />
+<svelte:window
+	onpagehide={zerar}
+	onpageshow={aoMostrarPagina}
+	onfocuscapture={isolarFocoDaJanela}
+	onbeforeunloadcapture={isolarDoRoteador}
+/>
+<svelte:document onvisibilitychange={isolarDoRoteador} />
 
 <div class="exame" data-hidratado={hidratado ? '' : undefined}>
 	<p class="subtitulo">{TEXTOS.subtitulo}</p>
@@ -91,7 +134,11 @@
 				<label>
 					<CaixaPrivada
 						marcado={estado.estados.includes(estadoDeVida)}
-						aoMudar={(sim: boolean) => estado.alternarEstado(estadoDeVida, sim)}
+						aoMudar={(sim: boolean) => {
+							mudou();
+							estado.alternarEstado(estadoDeVida, sim);
+						}}
+						{desativado}
 					/>
 					{ROTULOS_ESTADO[estadoDeVida]}
 				</label>
@@ -115,10 +162,14 @@
 						vezes={estado.marcacoes[item.id] ?? ''}
 						rotuloVezes={TEXTOS.rotuloVezes}
 						aoMarcar={(sim: boolean) => {
-							aviso = '';
+							mudou();
 							estado.marcar(item.id, sim);
 						}}
-						aoDefinirVezes={(texto: string) => estado.definirVezes(item.id, texto)}
+						aoDefinirVezes={(texto: string) => {
+							mudou();
+							estado.definirVezes(item.id, texto);
+						}}
+						{desativado}
 					/>
 				{/each}
 			</ul>
@@ -135,7 +186,11 @@
 				<span>Tempo desde a última confissão <span class="opcional">(opcional)</span></span>
 				<TextoPrivado
 					valor={estado.ultimaConfissao}
-					aoMudar={(texto: string) => (estado.ultimaConfissao = texto)}
+					aoMudar={(texto: string) => {
+						mudou();
+						estado.ultimaConfissao = texto;
+					}}
+					{desativado}
 				/>
 			</label>
 
@@ -146,7 +201,11 @@
 				     mantém a seleção igual ao estado. Atributos de CAMPO_PRIVADO. -->
 				<select
 					bind:this={seletorAto}
-					onchange={(e) => (estado.ato = e.currentTarget.value)}
+					onchange={(e) => {
+						mudou();
+						estado.ato = e.currentTarget.value;
+					}}
+					disabled={desativado}
 					autocomplete="off"
 					spellcheck="false"
 					autocorrect="off"
@@ -176,10 +235,23 @@
 			</details>
 		{/if}
 
+		{#if !hidratado}
+			<!-- Some na hidratação. Fica se o JavaScript estiver desligado ou não tiver carregado (por
+			     exemplo, HTML antigo em cache depois de uma publicação). Embaixo, para que sumir não
+			     desloque nada na tela. -->
+			<p class="sem-js">
+				Os campos só funcionam depois que a página termina de carregar, com JavaScript ligado. Até
+				lá, ficam desativados: assim, nada do que fosse marcado ficaria guardado no navegador.
+			</p>
+		{/if}
+
 		<div class="acoes">
-			<button type="button" class="principal" onclick={imprimir}>Imprimir</button>
-			<button type="button" onclick={apagarTudo}>Apagar tudo agora</button>
+			<button type="button" class="principal" onclick={imprimir} disabled={desativado}>
+				Imprimir
+			</button>
+			<button type="button" onclick={apagarTudo} disabled={desativado}>Apagar tudo agora</button>
 		</div>
+		<!-- Sempre presente (mesmo vazia), para o leitor de tela já conhecer a região de status. -->
 		<p class="aviso" role="status">{aviso}</p>
 
 		<Resumo
@@ -335,8 +407,20 @@
 		font-weight: 600;
 	}
 
-	.aviso:empty {
-		display: none;
+	.sem-js {
+		padding: var(--espaco-2) var(--espaco-3);
+		border-left: 4px solid var(--cor-rubrica);
+		background: var(--cor-papel-2);
+	}
+
+	.aviso {
+		min-height: 1lh;
+		margin: var(--espaco-2) 0 0;
+	}
+
+	button:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
 	}
 
 	/* Impressão: só o título e a lista (sem iframe nem biblioteca; nada sai da página). */

@@ -5,7 +5,12 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
-import { ARQUIVOS_DO_EXAME, REGRAS_DE_PRIVACIDADE } from './scripts/eslint-privacidade.ts';
+import {
+	ARQUIVOS_COMPARTILHADOS,
+	ARQUIVOS_DO_EXAME,
+	REGRAS_COMPARTILHADAS,
+	REGRAS_DE_PRIVACIDADE
+} from './scripts/eslint-privacidade.ts';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 
@@ -47,5 +52,11 @@ export default defineConfig(
 		files: ARQUIVOS_DO_EXAME,
 		ignores: ['**/*.test.ts'],
 		rules: REGRAS_DE_PRIVACIDADE
+	},
+	{
+		// Layout e hooks também rodam na página do exame: as mesmas regras de código (sem as de
+		// marcação e de imports, que o layout precisa).
+		files: ARQUIVOS_COMPARTILHADOS,
+		rules: REGRAS_COMPARTILHADAS
 	}
 );

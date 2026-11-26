@@ -34,7 +34,8 @@
 		"budget": "node scripts/check-budget.ts",
 		"licenses:check": "node scripts/check-licenses.ts",
 		"exame:rascunhos": "node scripts/exame-rascunhos.ts",
-		"verify": "pnpm check && pnpm lint && pnpm test:unit && pnpm build && pnpm budget && pnpm licenses:check && pnpm test:e2e"
+		"check:rascunhos": "node scripts/check-rascunhos.ts",
+		"verify": "pnpm check && pnpm lint && pnpm test:unit && pnpm build && pnpm check:rascunhos && pnpm budget && pnpm licenses:check && pnpm test:e2e"
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.14.1",

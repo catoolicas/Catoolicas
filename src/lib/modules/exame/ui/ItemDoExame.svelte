@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ItemExame } from '../domain/tipos.ts';
+	import type { ItemExame } from '#lib/modules/exame/domain/tipos.ts';
 	import CaixaPrivada from './CaixaPrivada.svelte';
 	import TextoPrivado from './TextoPrivado.svelte';
 
@@ -10,8 +10,9 @@
 		rotuloVezes: string;
 		aoMarcar: (sim: boolean) => void;
 		aoDefinirVezes: (texto: string) => void;
+		desativado: boolean;
 	};
-	let { item, marcado, vezes, rotuloVezes, aoMarcar, aoDefinirVezes }: Props = $props();
+	let { item, marcado, vezes, rotuloVezes, aoMarcar, aoDefinirVezes, desativado }: Props = $props();
 </script>
 
 <!-- Campos com valor de mão única (checked={...}, value={...}): o estado sempre manda no campo,
@@ -22,8 +23,9 @@
 			{marcado}
 			aoMudar={aoMarcar}
 			descricao={item.nota ? `nota-${item.id}` : undefined}
+			{desativado}
 		/>
-		<span>{item.pergunta}</span>
+		<span id="pergunta-{item.id}">{item.pergunta}</span>
 	</label>
 	{#if item.nota}
 		<p class="nota" id="nota-{item.id}">{item.nota}</p>
@@ -34,7 +36,13 @@
 	{#if marcado && item.grave}
 		<label class="vezes">
 			<span>{rotuloVezes} <span class="opcional">(opcional)</span></span>
-			<TextoPrivado valor={vezes} aoMudar={aoDefinirVezes} />
+			<!-- A pergunta descreve o campo: com vários itens marcados, cada "quantas vezes" é único. -->
+			<TextoPrivado
+				valor={vezes}
+				aoMudar={aoDefinirVezes}
+				descricao="pergunta-{item.id}"
+				{desativado}
+			/>
 		</label>
 	{/if}
 </li>

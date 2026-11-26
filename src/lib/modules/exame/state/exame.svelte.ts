@@ -1,12 +1,12 @@
-import { ATO_PADRAO } from '../conteudo.ts';
+import { ATO_PADRAO } from '#lib/modules/exame/conteudo.ts';
 import {
 	filtrarPorEstados,
 	montarResumo,
 	soVisiveis,
 	type Marcacoes,
 	type Resumo
-} from '../domain/resumo.ts';
-import type { EstadoDeVida, SecaoExame } from '../domain/tipos.ts';
+} from '#lib/modules/exame/domain/resumo.ts';
+import type { EstadoDeVida, SecaoExame } from '#lib/modules/exame/domain/tipos.ts';
 
 /**
  * Estado do Exame de consciência (ADR-0004).

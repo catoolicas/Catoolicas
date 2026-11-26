@@ -49,6 +49,9 @@ jobs:
       - name: Build estático
         run: pnpm build
 
+      - name: Nenhum rascunho em revisão no build
+        run: pnpm check:rascunhos
+
       - name: Orçamento de desempenho
         run: pnpm budget
 

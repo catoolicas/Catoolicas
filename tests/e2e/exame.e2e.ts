@@ -1,11 +1,11 @@
-import { expect, test, type Page, type Request } from '@playwright/test';
+import { chromium, expect, test, type Page, type Request } from '@playwright/test';
 import { AxeBuilder } from '@axe-core/playwright';
 import { ATOS } from '../../content/exame/atos.ts';
 import { TEXTOS } from '../../content/exame/interface.ts';
 import { ROTEIRO } from '../../content/exame/orientacoes.ts';
-import { ITENS_RASCUNHO, SECOES_RASCUNHO } from '../../content/exame/rascunhos.ts';
 import { SECOES } from '../../content/exame/secoes.ts';
-import type { ItemExame, SecaoExame } from '../../src/lib/modules/exame/domain/tipos.ts';
+import { textosEmRevisao } from '../../scripts/check-rascunhos.ts';
+import type { ItemExame } from '../../src/lib/modules/exame/domain/tipos.ts';
 import { CAMPO_PRIVADO } from '../../src/lib/modules/exame/ui/campos.ts';
 
 // Suíte de privacidade do Exame de consciência (ADR-0004). Mede no navegador o que a página
@@ -25,6 +25,7 @@ const GRAVE = exigir(
 	itens.find((i) => i.grave),
 	'item grave'
 );
+const GRAVE_2 = exigir(itens.filter((i) => i.grave)[1], 'segundo item grave');
 const LEVE = exigir(
 	itens.find((i) => !i.grave),
 	'item leve'
@@ -34,7 +35,23 @@ const ATO_SENHOR = exigir(
 	'ato "Senhor meu Jesus Cristo"'
 );
 
-/** Abre o exame e espera a hidratação (antes dela, marcar não atualiza a lista). */
+/**
+ * Registra, desde antes de a página carregar, toda violação da CSP: uma tentativa bloqueada não
+ * aparece como requisição no Playwright.
+ */
+async function vigiarViolacoes(page: Page) {
+	await page.addInitScript(() => {
+		const w = window as unknown as { violacoes: string[] };
+		w.violacoes = [];
+		addEventListener('securitypolicyviolation', (e) =>
+			w.violacoes.push(`${e.effectiveDirective} ${e.blockedURI}`)
+		);
+	});
+}
+const violacoes = (page: Page) =>
+	page.evaluate(() => (window as unknown as { violacoes: string[] }).violacoes);
+
+/** Abre o exame e espera a hidratação (antes dela, os campos ficam desativados). */
 async function abrir(page: Page) {
 	await page.goto(EXAME);
 	await expect(page.locator('.exame[data-hidratado]')).toBeAttached();
@@ -102,6 +119,7 @@ test.describe('Exame — privacidade', () => {
 	test('nenhuma requisição e nada guardado enquanto se marca, digita e imprime', async ({
 		page
 	}) => {
+		await vigiarViolacoes(page);
 		await abrir(page);
 		await page.waitForLoadState('networkidle');
 		const antes = await retrato(page);
@@ -122,10 +140,20 @@ test.describe('Exame — privacidade', () => {
 		await page.getByRole('button', { name: 'Imprimir' }).click();
 		await page.emulateMedia({ media: 'print' });
 		await page.emulateMedia({ media: 'screen' });
+		// Eventos da janela que fazem o roteador do SvelteKit buscar version.json (foco, aba
+		// visível) ou gravar a posição de rolagem no sessionStorage (aba escondida).
+		await page.evaluate(() => {
+			dispatchEvent(new FocusEvent('focus'));
+			document.dispatchEvent(new Event('visibilitychange', { bubbles: true }));
+			Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+			document.dispatchEvent(new Event('visibilitychange', { bubbles: true }));
+			delete (document as { visibilityState?: unknown }).visibilityState;
+		});
 		await page.waitForTimeout(300);
 
 		page.off('request', registrar);
 		expect(requisicoes).toEqual([]);
+		expect(await violacoes(page)).toEqual([]);
 		expect(await retrato(page)).toEqual(antes);
 	});
 
@@ -133,7 +161,8 @@ test.describe('Exame — privacidade', () => {
 		await abrir(page);
 		await page.waitForLoadState('networkidle');
 		const requisicoes: string[] = [];
-		page.on('request', (r) => requisicoes.push(`${r.method()} ${r.url()}`));
+		// Só conta o que chegou ao servidor: o Chromium anuncia o pedido de imagem antes de a CSP barrá-lo.
+		page.on('requestfinished', (r) => requisicoes.push(`${r.method()} ${r.url()}`));
 
 		const resultado = await page.evaluate(async () => {
 			const violacoes: string[] = [];
@@ -149,12 +178,16 @@ test.describe('Exame — privacidade', () => {
 			} catch {
 				// alguns navegadores lançam exceção em vez de só bloquear
 			}
+			// Imagem para a própria origem com dados na URL (o GitHub Pages registraria a URL).
+			new Image().src = './?vazou=3';
+			document.body.style.backgroundImage = 'url(./?vazou=4)';
 			await new Promise((r) => setTimeout(r, 300));
 			return { busca, violacoes };
 		});
 
 		expect(resultado.busca).toBe('bloqueada');
 		expect(resultado.violacoes).toContain('connect-src');
+		expect(resultado.violacoes).toContain('img-src');
 		expect(requisicoes.filter((r) => r.includes('vazou'))).toEqual([]);
 	});
 
@@ -188,20 +221,68 @@ test.describe('Exame — privacidade', () => {
 		await expect(page.locator('form')).toHaveCount(0);
 	});
 
-	test('"Apagar tudo agora" zera marcações, campos e lista, e avisa', async ({ page }) => {
+	test('"Apagar tudo agora" zera marcações, campos e lista, e avisa toda vez', async ({ page }) => {
 		await abrir(page);
+		// A região de status existe desde o início, para o leitor de tela já conhecê-la.
+		await expect(page.getByRole('status')).toHaveCount(1);
 		await preencher(page);
 		await page.getByRole('button', { name: 'Apagar tudo agora' }).click();
 		await esperarVazio(page);
 		await expect(page.getByRole('status')).toHaveText('Tudo foi apagado.');
+		// Qualquer mudança tira o aviso; apagar de novo avisa de novo.
+		await campoUltima(page).fill('x');
+		await expect(page.getByRole('status')).toHaveText('');
+		await page.getByRole('button', { name: 'Apagar tudo agora' }).click();
+		await expect(page.getByRole('status')).toHaveText('Tudo foi apagado.');
 	});
 
-	test('recarregar a página não restaura nada', async ({ page }) => {
+	test('recarregar a página não restaura nada, nem a posição de rolagem', async ({ page }) => {
 		await abrir(page);
 		await preencher(page);
+		await page.mouse.wheel(0, 3000);
 		await page.reload();
 		await expect(page.locator('.exame[data-hidratado]')).toBeAttached();
 		await esperarVazio(page);
+		// O roteador do SvelteKit gravaria a posição de rolagem no sessionStorage ao descarregar.
+		expect(await page.evaluate(() => sessionStorage.length)).toBe(0);
+	});
+
+	test('cache de navegação de verdade (Chromium): voltar não traz nada', async ({
+		browserName,
+		baseURL
+	}) => {
+		test.skip(browserName !== 'chromium', 'só no Chromium o Playwright permite ligar o bfcache');
+		test.setTimeout(60_000); // abre um Chromium próprio
+		// O Playwright desliga o bfcache do Chromium por padrão; aqui ele fica ligado.
+		const navegador = await chromium.launch({
+			executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+			ignoreDefaultArgs: ['--disable-back-forward-cache']
+		});
+		try {
+			const page = await navegador.newPage({ baseURL });
+			await page.addInitScript(() =>
+				addEventListener('pageshow', (e) => {
+					if (e.persisted) (window as unknown as { doCache: boolean }).doCache = true;
+				})
+			);
+			await abrir(page);
+			await preencher(page);
+			await page
+				.getByRole('navigation', { name: 'Principal' })
+				.getByRole('link', { name: 'Terço' })
+				.click();
+			await expect(page).toHaveURL(/\/terco\/$/);
+			// Vindo do cache, a página não dispara `load` (só `pageshow`): basta a navegação começar.
+			await page.goBack({ waitUntil: 'commit' });
+			await expect(page).toHaveURL(/\/exame\/$/);
+			// A página voltou mesmo do cache (senão o teste não provaria nada).
+			expect(await page.evaluate(() => (window as unknown as { doCache?: boolean }).doCache)).toBe(
+				true
+			);
+			await esperarVazio(page);
+		} finally {
+			await navegador.close();
+		}
 	});
 
 	test('valores que o navegador restaurar nos campos antes da hidratação são descartados', async ({
@@ -247,7 +328,7 @@ test.describe('Exame — privacidade', () => {
 			await page.evaluate(() => (window as unknown as { marca?: number }).marca)
 		).toBeUndefined();
 
-		await page.goBack();
+		await page.goBack({ waitUntil: 'commit' }); // vindo do bfcache não há `load`
 		await expect(page).toHaveURL(/\/exame\/$/);
 		await expect(page.locator('.exame[data-hidratado]')).toBeAttached();
 		await esperarVazio(page);
@@ -288,11 +369,34 @@ test.describe('Exame — privacidade', () => {
 	});
 });
 
+test.describe('Exame — sem JavaScript', () => {
+	test.use({ javaScriptEnabled: false });
+
+	test('campos e botões ficam desativados, com explicação', async ({ page }) => {
+		// O <noscript> do topo está no HTML (o Chromium com JS desligado pelo Playwright não o
+		// desenha, porque o leitor de HTML continua no modo "com scripts").
+		const html = await (await page.request.get(EXAME)).text();
+		expect(html).toMatch(/<noscript>[\s\S]*só funcionam com JavaScript[\s\S]*<\/noscript>/);
+		await page.goto(EXAME);
+		const estados = await page
+			.locator('.exame :is(input, select, button)')
+			.evaluateAll((els) => els.map((el) => (el as HTMLInputElement).disabled));
+		expect(estados.length).toBeGreaterThan(itens.length);
+		expect(estados.every(Boolean)).toBe(true);
+		await expect(
+			page.getByText(/^Os campos só funcionam depois que a página termina/)
+		).toBeVisible();
+	});
+});
+
 test.describe('Exame — funcionamento', () => {
 	test('lista: graves primeiro, com "quantas vezes"; depois as outras; o ato escolhido', async ({
 		page
 	}) => {
 		await abrir(page);
+		await expect(page.getByText(/^Os campos só funcionam depois que a página termina/)).toHaveCount(
+			0
+		);
 		await caixa(page, LEVE.pergunta).check();
 		await caixa(page, GRAVE.pergunta).check();
 		await campoVezes(page).fill('  umas 3  ');
@@ -341,14 +445,8 @@ test.describe('Exame — funcionamento', () => {
 	});
 
 	test('o site publicado não traz nenhum rascunho em revisão', async ({ page }) => {
-		const secoesRascunho: readonly SecaoExame[] = SECOES_RASCUNHO;
-		const itensRascunho: readonly ItemExame[] = ITENS_RASCUNHO;
-		const emRevisao = [
-			...secoesRascunho.filter((s) => s.status !== 'aprovado').map((s) => s.enunciado),
-			...[...secoesRascunho.flatMap((s) => s.itens), ...itensRascunho]
-				.filter((i) => i.status !== 'aprovado')
-				.map((i) => i.pergunta)
-		];
+		// Os mesmos textos (e ids) que `pnpm check:rascunhos` procura no build inteiro.
+		const emRevisao = textosEmRevisao();
 		expect(emRevisao.length).toBeGreaterThan(0);
 
 		const corpos: Promise<string>[] = [];
@@ -378,6 +476,7 @@ test.describe('Exame — funcionamento', () => {
 			await page.emulateMedia({ colorScheme: esquema });
 			await abrir(page);
 			await preencher(page);
+			await caixa(page, GRAVE_2.pergunta).check(); // dois campos "quantas vezes"
 			await page
 				.locator('.exame details')
 				.evaluateAll((ds) => ds.forEach((d) => ((d as HTMLDetailsElement).open = true)));
@@ -385,6 +484,14 @@ test.describe('Exame — funcionamento', () => {
 			expect(resultado.violations).toEqual([]);
 		});
 	}
+
+	test('cada "quantas vezes" é descrito pela sua pergunta', async ({ page }) => {
+		await abrir(page);
+		await caixa(page, GRAVE.pergunta).check();
+		await caixa(page, GRAVE_2.pergunta).check();
+		await expect(campoVezes(page).nth(0)).toHaveAccessibleDescription(GRAVE.pergunta);
+		await expect(campoVezes(page).nth(1)).toHaveAccessibleDescription(GRAVE_2.pergunta);
+	});
 
 	test('sem rolagem horizontal a 320 px, com itens marcados', async ({ page }) => {
 		await page.setViewportSize({ width: 320, height: 640 });

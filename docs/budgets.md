@@ -85,11 +85,12 @@ Ambiente: Node 22.23.5, pnpm 12.23.0, SvelteKit 3.4.0, Svelte 5.59.1, Vite 8.3.8
 
 | Página                     | HTML (gzip) | JS inicial (gzip) | CSS (gzip) |
 | -------------------------- | ----------- | ----------------- | ---------- |
-| `exame/index.html`         | 6.994 B     | 49,9 KB           | 2,6 KB     |
+| `exame/index.html`         | ~7,3 KB     | 50,2 KB           | 2,7 KB     |
 | `terco/index.html`         | 2.147 B     | 45,4 KB           | 1,8 KB     |
 | `terco/<série>/index.html` | ~3.589 B    | 57,2 KB           | 2,8 KB     |
 | `terco/rosario/index.html` | 3.606 B     | 57,1 KB           | 2,8 KB     |
 
+- **Depois da revisão independente:** ícone embutido no `app.html` (`data:`): +~250 B de HTML por página e uma requisição a menos. O exame passou a 50,2 KB de JS (campos desativados até a hidratação, isolamento do roteador).
 - **Limite do Exame:** 60 KB, como as páginas do Terço. O conteúdo vai no JS para a hidratação, e cada rascunho aprovado acrescenta texto (os 11 atuais somam ~2 KB).
 - **Efeito no Terço: +0,1 KB.** Uma primeira versão usava `{...atributos}` nos campos e `value` no `<select>`. Isso trouxe ao pedaço de JS **compartilhado por todas as páginas interativas** o código genérico de atributos e de seleção do Svelte: +2,5 KB no Terço, que ficou a 0,4 KB do limite. Com atributos literais e o seletor sincronizado por `$effect`, o custo sumiu (ADR-0004).
 

@@ -2,8 +2,14 @@
 	// Caixa de seleção do exame. Os atributos fixos são os de CAMPO_PRIVADO (campos.ts), escritos
 	// literalmente: assim já estão no HTML pré-renderizado (antes de qualquer restauração de
 	// formulário pelo navegador) e não pesam no JS. A suíte E2E confere todos os campos.
-	type Props = { marcado: boolean; aoMudar: (sim: boolean) => void; descricao?: string };
-	let { marcado, aoMudar, descricao }: Props = $props();
+	type Props = {
+		marcado: boolean;
+		aoMudar: (sim: boolean) => void;
+		descricao?: string;
+		/** Desativada até a hidratação (ADR-0004). */
+		desativado: boolean;
+	};
+	let { marcado, aoMudar, descricao, desativado }: Props = $props();
 </script>
 
 <input
@@ -11,6 +17,7 @@
 	checked={marcado}
 	onchange={(e) => aoMudar(e.currentTarget.checked)}
 	aria-describedby={descricao}
+	disabled={desativado}
 	autocomplete="off"
 	spellcheck="false"
 	autocorrect="off"

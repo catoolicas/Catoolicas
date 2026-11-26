@@ -8,15 +8,16 @@ O que a suíte automática (`tests/e2e/exame.e2e.ts`) **não alcança**: comport
 
 ## Restauração pelo navegador
 
-| #   | Verificação                                                      | Esperado                                     | Resultado          |
-| --- | ---------------------------------------------------------------- | -------------------------------------------- | ------------------ |
-| R1  | Firefox (desktop): recarregar com F5 e com Ctrl+Shift+R          | nada marcado, campos vazios                  | **não verificado** |
-| R2  | Firefox: fechar a aba e reabrir com Ctrl+Shift+T                 | nada marcado, campos vazios                  | **não verificado** |
-| R3  | Firefox: encerrar à força e "restaurar sessão anterior"          | nada marcado, campos vazios                  | **não verificado** |
-| R4  | Chrome (desktop): fechar a aba e reabrir com Ctrl+Shift+T        | nada marcado, campos vazios                  | **não verificado** |
-| R5  | Safari (iOS): ir para "Sobre" e voltar com o gesto de voltar     | nada marcado, campos vazios                  | **não verificado** |
-| R6  | Chrome (Android): trocar de app, voltar depois de alguns minutos | se a aba foi descartada e recarregada: vazio | **não verificado** |
-| R7  | Firefox e Chrome: voltar e avançar pelo histórico várias vezes   | nada marcado, campos vazios                  | **não verificado** |
+| #   | Verificação                                                                                          | Esperado                                                           | Resultado          |
+| --- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------ |
+| R1  | Firefox (desktop): recarregar com F5 e com Ctrl+Shift+R                                              | nada marcado, campos vazios                                        | **não verificado** |
+| R2  | Firefox: fechar a aba e reabrir com Ctrl+Shift+T                                                     | nada marcado, campos vazios                                        | **não verificado** |
+| R3  | Firefox: encerrar à força e "restaurar sessão anterior"                                              | nada marcado, campos vazios                                        | **não verificado** |
+| R4  | Chrome (desktop): fechar a aba e reabrir com Ctrl+Shift+T                                            | nada marcado, campos vazios                                        | **não verificado** |
+| R5  | Safari (iOS): ir para "Sobre" e voltar com o gesto de voltar                                         | nada marcado, campos vazios                                        | **não verificado** |
+| R6  | Chrome (Android): trocar de app, voltar depois de alguns minutos                                     | se a aba foi descartada e recarregada: vazio                       | **não verificado** |
+| R7  | Firefox e Chrome: voltar e avançar pelo histórico várias vezes                                       | nada marcado, campos vazios                                        | **não verificado** |
+| R8  | Firefox com JavaScript desligado (`javascript.enabled` = false) e Tor Browser no nível "Mais seguro" | aviso do `<noscript>` visível no topo; caixas e campos desativados | **não verificado** |
 
 ## Teclados, autopreenchimento e extensões
 

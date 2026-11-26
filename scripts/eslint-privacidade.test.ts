@@ -57,6 +57,22 @@ describe('regras de privacidade do Exame', () => {
 		[
 			'armazenamento do Terço',
 			"import { gravarPreferencias } from '#lib/modules/terco/state/preferencias.ts';"
+		],
+		// Lacunas apontadas pela revisão independente da CHG-0006:
+		[
+			'import relativo para fora do exame',
+			"import { gravarPreferencias } from '../../terco/state/preferencias.ts';"
+		],
+		[
+			'`..` dentro do caminho do exame',
+			"import { gravarPreferencias } from '#lib/modules/exame/../terco/state/preferencias.ts';"
+		],
+		['apelido do console', "const c = console; c.log('x');"],
+		['desestruturação do console', "const { log } = console; log('x');"],
+		['reportError', "reportError(new Error('x'));"],
+		[
+			'desestruturação de propriedade proibida',
+			'const { defaultView } = document; void defaultView;'
 		]
 	])('bloqueia %s em .ts', async (_nome, codigo) => {
 		expect(await bloqueado(codigo, TS)).toBe(true);
@@ -71,7 +87,23 @@ describe('regras de privacidade do Exame', () => {
 		],
 		['<form>', svelte('', '<form><input /></form>')],
 		['atributo name', svelte('', '<input name="vezes" />')],
-		['localStorage no script', svelte("localStorage.setItem('a', 'b');")]
+		['localStorage no script', svelte("localStorage.setItem('a', 'b');")],
+		// Lacunas apontadas pela revisão independente da CHG-0006:
+		['<img> com dados na URL', svelte("let x = $state('');", '<img src="?q={x}" alt="" />')],
+		['<a> com dados na URL', svelte("let x = $state('');", '<a href="?q={x}">x</a>')],
+		['atributo de URL abreviado', svelte("let src = $state('');", '<img {src} alt="" />')],
+		[
+			'style: com url()',
+			svelte("let x = $state('');", '<div style:background-image={`url(?q=${x})`}></div>')
+		],
+		['style inline com dados', svelte("let x = $state('');", '<div style="color: {x}"></div>')],
+		[
+			'título com dados',
+			svelte("let x = $state('');", '<svelte:head><title>{x}</title></svelte:head>')
+		],
+		['<svelte:element>', svelte('', '<svelte:element this="form"></svelte:element>')],
+		['{...atributos}', svelte('const a = {};', '<input {...a} />')],
+		['<link>', svelte('', '<link rel="prefetch" href="./x" />')]
 	])('bloqueia %s em .svelte', async (_nome, codigo) => {
 		expect(await bloqueado(codigo, SVELTE)).toBe(true);
 	});
@@ -80,6 +112,7 @@ describe('regras de privacidade do Exame', () => {
 		const script = [
 			"import { flushSync } from 'svelte';",
 			"import { resolve } from '$app/paths';",
+			"import { montarExame } from '#lib/modules/exame/domain/montagem.ts';",
 			"import { dev } from '$app/environment';",
 			"import type { ItemExame } from '#lib/modules/exame/domain/tipos.ts';",
 			"import { SECOES } from '#content/exame/secoes.ts';",
@@ -90,7 +123,7 @@ describe('regras de privacidade do Exame', () => {
 			"const rascunhos = dev ? import('#content/exame/rascunhos.ts') : null;",
 			'function imprimir() { print(); }',
 			'function focar() { document.getElementById(item.id)?.focus(); flushSync(); }',
-			'void [resolve, SECOES, Outro, rascunhos, imprimir, focar];'
+			'void [resolve, montarExame, SECOES, Outro, rascunhos, imprimir, focar];'
 		].join('\n');
 		const marcacao =
 			'<input type="checkbox" checked={marcado} onchange={(e) => (marcado = e.currentTarget.checked)} />' +
@@ -101,5 +134,17 @@ describe('regras de privacidade do Exame', () => {
 	it('só vale para o exame: o Terço pode gravar preferências', async () => {
 		const arquivo = 'src/lib/modules/terco/state/__teste__.ts';
 		expect(await erros("localStorage.setItem('a', 'b');", arquivo)).toEqual([]);
+	});
+
+	it('o layout, que também roda no exame, não pode usar armazenamento nem rede', async () => {
+		const layout = 'src/routes/+layout.svelte';
+		expect(await bloqueado(svelte("localStorage.setItem('a', 'b');"), layout)).toBe(true);
+		expect(await bloqueado(svelte("fetch('/x');"), layout)).toBe(true);
+		// ...mas continua podendo ter links e importar o CSS global.
+		const comLinks = svelte(
+			"import '../app.css';\nconst href = '/';",
+			'<a {href} data-sveltekit-reload>Início</a>'
+		);
+		expect(await erros(comLinks, layout)).toEqual([]);
 	});
 });

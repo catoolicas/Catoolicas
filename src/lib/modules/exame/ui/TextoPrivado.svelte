@@ -2,14 +2,22 @@
 	// Campo de texto do exame. Os atributos fixos são os de CAMPO_PRIVADO (campos.ts), escritos
 	// literalmente: assim já estão no HTML pré-renderizado (antes de qualquer restauração de
 	// formulário pelo navegador) e não pesam no JS. A suíte E2E confere todos os campos.
-	type Props = { valor: string; aoMudar: (texto: string) => void };
-	let { valor, aoMudar }: Props = $props();
+	type Props = {
+		valor: string;
+		aoMudar: (texto: string) => void;
+		descricao?: string;
+		/** Desativado até a hidratação (ADR-0004). */
+		desativado: boolean;
+	};
+	let { valor, aoMudar, descricao, desativado }: Props = $props();
 </script>
 
 <input
 	type="text"
 	value={valor}
 	oninput={(e) => aoMudar(e.currentTarget.value)}
+	aria-describedby={descricao}
+	disabled={desativado}
 	autocomplete="off"
 	spellcheck="false"
 	autocorrect="off"

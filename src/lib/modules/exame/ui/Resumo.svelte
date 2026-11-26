@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { ROTEIRO, TEXTOS } from '../conteudo.ts';
-	import type { Resumo } from '../domain/resumo.ts';
-	import type { OracaoExame } from '../domain/tipos.ts';
+	import { ROTEIRO, TEXTOS } from '#lib/modules/exame/conteudo.ts';
+	import type { Resumo } from '#lib/modules/exame/domain/resumo.ts';
+	import type { OracaoExame } from '#lib/modules/exame/domain/tipos.ts';
 
 	type Props = {
 		resumo: Resumo;
