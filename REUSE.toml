@@ -11,3 +11,13 @@ path = "**"
 precedence = "closest"
 SPDX-FileCopyrightText = "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# Conteúdo do Terço importado do terco-diario (ver content/terco/SOURCES.md).
+[[annotations]]
+path = "content/terco/**"
+precedence = "closest"
+SPDX-FileCopyrightText = [
+  "2026 Korvo (garamogger) <https://github.com/garamogger/terco-diario>",
+  "2026 Contribuidores do Catoolicas <https://github.com/catoolicas/Catoolicas>",
+]
+SPDX-License-Identifier = "GPL-3.0-or-later"

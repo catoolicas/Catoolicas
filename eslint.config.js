@@ -10,6 +10,8 @@ const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 
 export default defineConfig(
 	includeIgnoreFile(gitignorePath),
+	// docs/ guarda ferramentas de registro (por exemplo, a importação da CHG-0002), não código do app.
+	{ ignores: ['docs/**'] },
 	js.configs.recommended,
 	ts.configs.recommendedTypeChecked,
 	svelte.configs.recommended,
