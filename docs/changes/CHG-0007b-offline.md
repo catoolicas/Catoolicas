@@ -67,8 +67,8 @@ Executada em 27/11/2026 com pnpm 12.23.0. Os E2E rodaram em Chromium desktop e m
 | Verificação                                                 | Node 22.23.5     | Node 26.13.1 |
 | ----------------------------------------------------------- | ---------------- | ------------ |
 | `pnpm check` (com `tsc` do service worker) e `pnpm lint`    | OK               | OK           |
-| `pnpm test:unit`                                            | 167/167          | 167/167      |
+| `pnpm test:unit`                                            | 169/169          | 169/169      |
 | `pnpm build`, `check:rascunhos`, `budget`, `licenses:check` | OK               | OK           |
-| `pnpm test:e2e` (`chromium` + `chromium-movel`)             | 136/136          | 136/136      |
-| E2E com `BASE_PATH=/Catoolicas` (`chromium`)                | 68/68            | —            |
-| `reuse lint`                                                | 149/149 arquivos | —            |
+| `pnpm test:e2e` (`chromium` + `chromium-movel`)             | 140/140          | 140/140      |
+| E2E com `BASE_PATH=/Catoolicas` (`chromium`)                | 70/70            | —            |
+| `reuse lint`                                                | 151/151 arquivos | —            |
