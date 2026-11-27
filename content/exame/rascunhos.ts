@@ -2,17 +2,25 @@
 // (docs/editorial/exame-matriz.md), sem copiar frases dos PDFs de referência (ADR-0003, item 6).
 //
 // Nada aqui é publicado enquanto `status` não for 'aprovado' por um dos responsáveis
-// (garamogger ou williamdasilvazoia8-blip). A marcação `grave` é só uma PROPOSTA.
-// Cânones citados conferidos em vatican.va em 26/11/2026 (ver SOURCES.md).
+// (garamogger ou williamdasilvazoia8-blip). Cânones citados conferidos em vatican.va em
+// 26/11/2026 (ver SOURCES.md).
+//
+// APROVADOS em 27/11/2026: a seção de preceitos e os 11 itens abaixo, com a gravidade proposta,
+// aprovados em bloco pelos responsáveis depois do merge do PR #1 (CHG-0008). Um item novo entra
+// com `...emRevisao` e só passa a `...aprovado` depois da aprovação; rode `pnpm exame:rascunhos`.
 import type { ItemExame, SecaoExame } from '#lib/modules/exame/domain/tipos.ts';
 
 const PROCEDENCIA = { origem: 'rascunho-assistido (CHG-0005)' } as const;
 
-const rascunho = {
+/** Rascunho aprovado: publicado, mantendo a procedência de rascunho assistido. */
+const aprovado = {
 	origem: 'rascunho-assistido',
 	procedencia: PROCEDENCIA,
-	status: 'em-revisao'
+	status: 'aprovado'
 } as const;
+
+/** Para itens novos, ainda não aprovados (hoje, nenhum). */
+export const emRevisao = { ...aprovado, status: 'em-revisao' } as const;
 
 /** Seção nova proposta: os preceitos da Igreja que a base ainda não cobre (a Missa já está no 3º). */
 export const SECOES_RASCUNHO = [
@@ -29,7 +37,7 @@ export const SECOES_RASCUNHO = [
 				acusacao: 'Passei mais de um ano sem confessar pecados graves',
 				nota: 'A obrigação de confessar ao menos uma vez por ano diz respeito aos pecados graves (cân. 989).',
 				grave: true,
-				...rascunho
+				...aprovado
 			},
 			{
 				id: 'ex-preceitos-2',
@@ -37,7 +45,7 @@ export const SECOES_RASCUNHO = [
 				acusacao: 'Deixei de comungar no tempo pascal',
 				nota: 'A Igreja pede a Comunhão ao menos uma vez por ano, no tempo pascal, salvo justa causa (cân. 920).',
 				grave: true,
-				...rascunho
+				...aprovado
 			},
 			{
 				id: 'ex-preceitos-3',
@@ -46,7 +54,7 @@ export const SECOES_RASCUNHO = [
 				acusacao: 'Deixei de guardar o jejum ou a abstinência de preceito',
 				nota: 'A abstinência obriga a partir dos 14 anos completos; o jejum, dos 18 anos até o início dos 60 (cân. 97 e 1252). Os bispos podem determinar outras formas de penitência (cân. 1253). Na dúvida sobre a própria obrigação, pergunte ao confessor.',
 				grave: false,
-				...rascunho
+				...aprovado
 			},
 			{
 				id: 'ex-preceitos-4',
@@ -54,10 +62,10 @@ export const SECOES_RASCUNHO = [
 					'Deixei de ajudar a Igreja em suas necessidades, conforme as minhas possibilidades?',
 				acusacao: 'Deixei de ajudar a Igreja em suas necessidades',
 				grave: false,
-				...rascunho
+				...aprovado
 			}
 		],
-		...rascunho
+		...aprovado
 	}
 ] as const satisfies readonly SecaoExame[];
 
@@ -70,7 +78,7 @@ export const ITENS_RASCUNHO = [
 		acusacao: 'Deixei de cumprir a penitência',
 		nota: 'Se esqueceu sem culpa, não é pecado: reze algo equivalente ou pergunte ao confessor.',
 		grave: false,
-		...rascunho
+		...aprovado
 	},
 	{
 		secao: 'ex-m4',
@@ -80,7 +88,7 @@ export const ITENS_RASCUNHO = [
 		acusacao: 'Descuidei do exemplo, da correção ou da vigilância com meus filhos',
 		grave: false,
 		estados: ['pais'],
-		...rascunho
+		...aprovado
 	},
 	{
 		secao: 'ex-m4',
@@ -89,7 +97,7 @@ export const ITENS_RASCUNHO = [
 		acusacao: 'Faltei com o amor e o cuidado devidos ao meu cônjuge',
 		grave: false,
 		estados: ['casados'],
-		...rascunho
+		...aprovado
 	},
 	{
 		secao: 'ex-m5',
@@ -97,7 +105,7 @@ export const ITENS_RASCUNHO = [
 		pergunta: 'Comi ou bebi em excesso, por falta de domínio de mim mesmo?',
 		acusacao: 'Comi ou bebi em excesso',
 		grave: false,
-		...rascunho
+		...aprovado
 	},
 	{
 		secao: 'ex-m6',
@@ -108,7 +116,7 @@ export const ITENS_RASCUNHO = [
 		nota: 'Doença, cansaço real e outros motivos sérios justificam a recusa.',
 		grave: false,
 		estados: ['casados'],
-		...rascunho
+		...aprovado
 	},
 	{
 		secao: 'ex-m7',
@@ -118,7 +126,7 @@ export const ITENS_RASCUNHO = [
 		nota: 'Se o prejuízo foi considerável, diga o valor aproximado.',
 		grave: false,
 		estados: ['trabalho'],
-		...rascunho
+		...aprovado
 	},
 	{
 		secao: 'ex-m7',
@@ -126,6 +134,6 @@ export const ITENS_RASCUNHO = [
 		pergunta: 'Apeguei-me ao dinheiro e aos bens a ponto de esquecer Deus ou os outros?',
 		acusacao: 'Fui apegado ao dinheiro e aos bens',
 		grave: false,
-		...rascunho
+		...aprovado
 	}
 ] as const satisfies readonly (ItemExame & { readonly secao: string })[];

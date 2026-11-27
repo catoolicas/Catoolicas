@@ -27,8 +27,8 @@ O autor (`garamogger`, Korvo) é um dos responsáveis pelo projeto e declarou te
 
 - **O que são:** itens redigidos com IA, por decisão dos responsáveis ("eu rascunho, vocês aprovam"), a partir da matriz de **tópicos** em `docs/editorial/exame-matriz.md`.
 - **O que não são:** nenhuma frase foi copiada ou parafraseada dos três PDFs de referência. Um deles é "© Santa Cruz Editora 2020, todos os direitos reservados", e os outros dois não têm licença.
-- **Status:** todos estão `em-revisao` e não são publicados até aprovação item a item.
-- **`rascunhos-aprovados.ts`:** gerado por `pnpm exame:rascunhos`, só com os aprovados (hoje, nenhum). É o único arquivo de rascunhos que o site publicado importa; o `rascunhos.ts` só entra no modo de desenvolvimento (CHG-0006).
+- **Status:** a seção de preceitos e os 11 itens foram **aprovados em 27/11/2026**, em bloco, pelos responsáveis, depois do merge do PR #1 (CHG-0008). A origem continua registrada como `rascunho-assistido`. Itens novos entram em revisão e só são publicados depois de aprovados.
+- **`rascunhos-aprovados.ts`:** gerado por `pnpm exame:rascunhos`, só com os aprovados (hoje, todos). É o único arquivo de rascunhos que o site publicado importa; o `rascunhos.ts` só entra no modo de desenvolvimento (CHG-0006).
 - **Cânones citados nas notas:** conferidos em 26/11/2026 no texto oficial do Código de Direito Canônico (1983), em vatican.va.
   - Cân. 97 §1: maioridade aos 18 anos. [Latim, Livro I](https://www.vatican.va/archive/cod-iuris-canonici/latin/documents/cic_liberI_la.html)
   - Cân. 920: Comunhão ao menos uma vez por ano, no tempo pascal. [Latim, Livro IV](https://www.vatican.va/archive/cod-iuris-canonici/latin/documents/cic_liberIV_la.html)

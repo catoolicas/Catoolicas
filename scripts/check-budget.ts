@@ -15,7 +15,13 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
 export type Limites = { htmlGzip: number; jsGzip: number; cssGzip: number };
-export type Orcamento = { padrao: Limites; paginas?: Record<string, Partial<Limites>> };
+export type LimiteFontes = { arquivos: number; bytes: number };
+export type Orcamento = {
+	padrao: Limites;
+	paginas?: Record<string, Partial<Limites>>;
+	/** Todas as fontes .woff2 do build (já comprimidas; mede-se o tamanho real). */
+	fontes?: LimiteFontes;
+};
 export type Medicao = { pagina: string; htmlGzip: number; jsGzip: number; cssGzip: number };
 export type Violacao = { pagina: string; metrica: keyof Limites; medido: number; limite: number };
 
@@ -112,6 +118,28 @@ export function medirBuild(diretorioBuild: string): Medicao[] {
 		});
 }
 
+/** Fontes .woff2 do build: quantas e quantos bytes. */
+export function medirFontes(diretorioBuild: string): LimiteFontes {
+	const arquivos = (readdirSync(diretorioBuild, { recursive: true }) as string[]).filter((f) =>
+		f.endsWith('.woff2')
+	);
+	return {
+		arquivos: arquivos.length,
+		bytes: arquivos.reduce((total, f) => total + statSync(join(diretorioBuild, f)).size, 0)
+	};
+}
+
+/** Mensagens para cada limite de fontes excedido (vazio se estiver dentro). */
+export function avaliarFontes(medido: LimiteFontes, limite: LimiteFontes | undefined): string[] {
+	if (!limite) return [];
+	const erros: string[] = [];
+	if (medido.arquivos > limite.arquivos)
+		erros.push(`fontes: ${medido.arquivos} arquivos (limite ${limite.arquivos})`);
+	if (medido.bytes > limite.bytes)
+		erros.push(`fontes: ${medido.bytes} bytes (limite ${limite.bytes})`);
+	return erros;
+}
+
 const kb = (bytes: number) => `${(bytes / 1024).toFixed(1)} KB`;
 
 function principal(): void {
@@ -134,12 +162,20 @@ function principal(): void {
 		);
 	}
 
+	const fontes = medirFontes(join(raiz, 'build'));
+	if (orcamento.fontes)
+		console.log(
+			`\nFontes: ${fontes.arquivos} arquivo(s), ${kb(fontes.bytes)} / ${orcamento.fontes.arquivos} arquivo(s), ${kb(orcamento.fontes.bytes)}`
+		);
+
 	const violacoes = avaliar(medicoes, orcamento);
-	if (violacoes.length > 0) {
+	const errosDeFontes = avaliarFontes(fontes, orcamento.fontes);
+	if (violacoes.length > 0 || errosDeFontes.length > 0) {
 		console.error('\nOrçamento excedido:');
 		for (const v of violacoes) {
 			console.error(`- ${v.pagina}: ${v.metrica} = ${kb(v.medido)} (limite ${kb(v.limite)})`);
 		}
+		for (const e of errosDeFontes) console.error(`- ${e}`);
 		process.exit(1);
 	}
 	console.log(`\nOrçamento respeitado em ${medicoes.length} página(s).`);

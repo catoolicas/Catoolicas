@@ -1,6 +1,6 @@
 # CHG-0005 — Conteúdo do Exame de consciência
 
-- **Status:** implementada; rascunhos aguardando revisão dos responsáveis
+- **Status:** publicada em 27/11/2026: merge do [PR #1](https://github.com/catoolicas/Catoolicas/pull/1) por `garamogger` e [run 46010872784](https://github.com/catoolicas/Catoolicas/actions/runs/46010872784). Os rascunhos foram aprovados em bloco no mesmo dia e entram no site pela CHG-0008.
 - **Marco:** M2 (Exame)
 - **Próxima:** CHG-0006 (interface e privacidade). Esta change **não altera nenhuma página publicada**.
 

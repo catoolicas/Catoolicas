@@ -3,6 +3,7 @@ import { AxeBuilder } from '@axe-core/playwright';
 import { ATOS } from '../../content/exame/atos.ts';
 import { TEXTOS } from '../../content/exame/interface.ts';
 import { ROTEIRO } from '../../content/exame/orientacoes.ts';
+import { ITENS_RASCUNHO, SECOES_RASCUNHO } from '../../content/exame/rascunhos.ts';
 import { SECOES } from '../../content/exame/secoes.ts';
 import { textosEmRevisao } from '../../scripts/check-rascunhos.ts';
 import type { ItemExame } from '../../src/lib/modules/exame/domain/tipos.ts';
@@ -29,6 +30,17 @@ const GRAVE_2 = exigir(itens.filter((i) => i.grave)[1], 'segundo item grave');
 const LEVE = exigir(
 	itens.find((i) => !i.grave),
 	'item leve'
+);
+/** Todos os itens de rascunho (aprovados ou não) e os aprovados que são de pessoas casadas. */
+const RASCUNHOS: readonly ItemExame[] = [
+	...SECOES_RASCUNHO.flatMap((s) => [...s.itens]),
+	...ITENS_RASCUNHO
+];
+const PRECEITOS_APROVADOS = SECOES_RASCUNHO.some(
+	(s) => s.id === 'ex-preceitos' && (s.status as string) === 'aprovado'
+);
+const CASADOS = ITENS_RASCUNHO.filter(
+	(i: ItemExame) => i.status === 'aprovado' && i.estados?.includes('casados')
 );
 const ATO_SENHOR = exigir(
 	ATOS.find((a) => a.id === 'contricao-senhor'),
@@ -447,10 +459,11 @@ test.describe('Exame — funcionamento', () => {
 		await expect(page.getByText(TEXTOS.destruirFolha)).toBeHidden();
 	});
 
-	test('o site publicado não traz nenhum rascunho em revisão', async ({ page }) => {
+	test('o site publicado traz os rascunhos aprovados e nenhum em revisão', async ({ page }) => {
 		// Os mesmos textos (e ids) que `pnpm check:rascunhos` procura no build inteiro.
 		const emRevisao = textosEmRevisao();
-		expect(emRevisao.length).toBeGreaterThan(0);
+		const aprovados = RASCUNHOS.filter((i) => i.status === 'aprovado').map((i) => i.pergunta);
+		expect(emRevisao.length + aprovados.length).toBeGreaterThan(0);
 
 		const corpos: Promise<string>[] = [];
 		page.on('response', (r) => {
@@ -459,9 +472,40 @@ test.describe('Exame — funcionamento', () => {
 		await abrir(page);
 		await page.waitForLoadState('networkidle');
 		const tudo = (await Promise.all(corpos)).join('\n');
-		expect(tudo).toContain(GRAVE.pergunta); // o conteúdo aprovado está lá
+		expect(tudo).toContain(GRAVE.pergunta); // a base está lá
+		for (const texto of aprovados) expect(tudo, texto).toContain(texto);
 		for (const texto of emRevisao) expect(tudo, texto).not.toContain(texto);
 		await expect(page.getByText('Rascunho em revisão')).toHaveCount(0);
+	});
+
+	test('seção dos preceitos da Igreja, antes de "Omissões"', async ({ page }) => {
+		test.skip(!PRECEITOS_APROVADOS, 'a seção dos preceitos ainda não foi aprovada');
+		await abrir(page);
+		const titulos = await page.locator('.secao h2').allTextContents();
+		expect(titulos.indexOf('Os preceitos da Igreja')).toBe(titulos.indexOf('Omissões') - 1);
+	});
+
+	test('filtro por estado de vida: os itens de um estado só aparecem quando escolhido', async ({
+		page
+	}) => {
+		test.skip(CASADOS.length === 0, 'nenhum item aprovado de pessoas casadas');
+		await abrir(page);
+		const filtro = page.getByRole('group', { name: 'Mostrar também as perguntas para' });
+		const itens = page.locator('.exame .item');
+		const antes = await itens.count();
+		const [casado] = CASADOS;
+		if (!casado) throw new Error('sem item de casados');
+		await expect(caixa(page, casado.pergunta)).toHaveCount(0);
+
+		await filtro.getByRole('checkbox', { name: 'pessoas casadas' }).check();
+		await expect(itens).toHaveCount(antes + CASADOS.length);
+		await caixa(page, casado.pergunta).check();
+		await expect(resumo(page)).toContainText(casado.acusacao);
+
+		// Desmarcar o estado esconde o item e o tira da lista (nada fica guardado à toa).
+		await filtro.getByRole('checkbox', { name: 'pessoas casadas' }).uncheck();
+		await expect(itens).toHaveCount(antes);
+		await expect(resumo(page)).not.toContainText(casado.acusacao);
 	});
 
 	test('teclado: Tab chega às caixas e o Espaço marca', async ({ page }) => {

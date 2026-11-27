@@ -5,6 +5,44 @@
  * Cores escolhidas para contraste ≥ 4.5:1 sobre o fundo nos dois temas (verificado pelo axe nos testes E2E).
  */
 
+/*
+ * Cormorant Garamond, a fonte do terco-diario (Korvo): 400, 600 e 400 itálico, subconjunto latino
+ * (inclui æ e œ do latim). Auto-hospedada (OFL-1.1, ver REUSE.toml); nenhuma requisição externa.
+ * O Vite dá nome com hash aos arquivos; o layout pré-carrega as faces normais.
+ */
+@font-face {
+	font-family: 'Cormorant Garamond';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('./lib/fontes/cormorant-garamond-latin-400-normal.woff2') format('woff2');
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: 'Cormorant Garamond';
+	font-style: normal;
+	font-weight: 600;
+	font-display: swap;
+	src: url('./lib/fontes/cormorant-garamond-latin-600-normal.woff2') format('woff2');
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: 'Cormorant Garamond';
+	font-style: italic;
+	font-weight: 400;
+	font-display: swap;
+	src: url('./lib/fontes/cormorant-garamond-latin-400-italic.woff2') format('woff2');
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
 	color-scheme: light dark;
 
@@ -22,7 +60,8 @@
 	--fonte-ui:
 		system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
 	--fonte-texto:
-		'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, 'Noto Serif', serif;
+		'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia,
+		'Noto Serif', serif;
 	--tam-base: 1rem;
 	--tam-texto: 1.125rem;
 	--entrelinha: 1.6;
