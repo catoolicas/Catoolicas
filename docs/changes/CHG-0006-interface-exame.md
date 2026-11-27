@@ -1,6 +1,9 @@
 # CHG-0006 — Interface e privacidade do Exame de consciência
 
-- **Status:** implementada; **não publicada**. Publicar depende da revisão editorial (E12a, E19, E20) e da autorização para `main`.
+- **Status:** publicada em 27/11/2026: merge do [PR #1](https://github.com/catoolicas/Catoolicas/pull/1) por `garamogger` e [run 46010872784](https://github.com/catoolicas/Catoolicas/actions/runs/46010872784).
+- **Verificação ao vivo** (Chromium, no site publicado):
+  - resposta 200, com as duas `<meta>` de CSP e nenhum texto em revisão no HTML;
+  - depois de marcar itens, escrever, imprimir, focar a janela e mostrar a aba: nenhuma requisição, nenhuma violação de CSP, nenhum erro de console e nada no armazenamento.
 - **Marco:** M2 (Exame)
 - **Depende de:** CHG-0005 (conteúdo)
 - **Decisão de arquitetura:** [ADR-0004](../adr/0004-privacidade-exame.md), com o modelo de ameaças
