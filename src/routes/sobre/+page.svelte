@@ -36,6 +36,11 @@
 			memória da página e se apaga ao fechá-la, recarregá-la ou sair dela.
 		</li>
 		<li>
+			Para funcionar sem internet, o navegador guarda uma cópia das páginas e dos arquivos do site
+			depois que você abre o Terço ou o Exame. É só o conteúdo público do site, nunca o que você faz
+			nele. Para apagar essa cópia, limpe os dados do site nas configurações do navegador.
+		</li>
+		<li>
 			O site é hospedado no GitHub Pages. Segundo a
 			<a
 				href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection"

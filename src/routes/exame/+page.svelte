@@ -12,7 +12,9 @@
 	continuam autorizados pelos hashes da global.
 	- connect-src 'none': fetch, XMLHttpRequest, WebSocket, EventSource e sendBeacon bloqueados.
 	- img-src data:: nenhuma imagem com requisição (nem <img>, nem background-image via CSSOM).
-	- form-action, frame-src, worker-src, media-src, manifest-src, object-src e base-uri: nada.
+	- form-action, frame-src, media-src, manifest-src, object-src e base-uri: nada.
+	- Sem worker-src 'none': o SvelteKit registra o service worker do site também a partir daqui
+	  (ADR-0005). Ele só guarda arquivos públicos; a página não faz requisições depois de aberta.
 	Não cobre URLs de scripts, estilos e fontes da própria origem nem navegação: isso fica com as
 	regras de lint do exame e com a suíte de privacidade E2E.
 	Escrita literalmente: as regras de lint proíbem interpolação no <svelte:head> do exame.
@@ -25,7 +27,7 @@
 	/>
 	<meta
 		http-equiv="content-security-policy"
-		content="connect-src 'none'; img-src data:; form-action 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'"
+		content="connect-src 'none'; img-src data:; form-action 'none'; frame-src 'none'; media-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'"
 	/>
 </svelte:head>
 

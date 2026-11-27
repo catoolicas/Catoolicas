@@ -19,7 +19,10 @@ export default defineConfig({
 	reporter: process.env.CI ? [['list'], ['github']] : 'list',
 	use: {
 		baseURL: `http://localhost:4173${base}/`,
-		trace: 'off'
+		trace: 'off',
+		// Os testes rodam sem service worker, para não dependerem de instalação em segundo plano;
+		// a suíte de uso sem internet (offline.e2e.ts) o liga (ADR-0005).
+		serviceWorkers: 'block'
 	},
 	webServer: {
 		command: `node scripts/serve-build.ts 4173 ${base}`,
