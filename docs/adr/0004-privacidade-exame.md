@@ -35,8 +35,8 @@ O exame lida com o dado mais sensível do projeto: pecados que a pessoa reconhec
    - Nada vai para armazenamento, URL, título, histórico ou rede.
    - `limpar()` volta tudo ao início. É chamado pelo botão "Apagar tudo agora" (sem confirmação: serve para apagar na hora), no `pagehide` e no `pageshow` vindo do cache de navegação.
 2. **CSP adicional na página**, numa segunda `<meta>` escrita literalmente em `routes/exame/+page.svelte`:
-   - `connect-src 'none'; img-src data:; form-action 'none'; frame-src 'none'; media-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'`;
-   - sem `worker-src 'none'` desde a CHG-0007b: o SvelteKit registra o service worker do site também a partir desta página (ADR-0005). Ele só guarda arquivos públicos, e a suíte offline confere que marcar itens não faz requisição nem muda o cache;
+   - `connect-src 'none'; img-src data:; form-action 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'`;
+   - `worker-src 'none'` continua desde a CHG-0007b: nenhum código da página cria workers, que poderiam usar a rede. O service worker do site é registrado só pelo Terço (ADR-0005), e mesmo assim serve esta página sem internet (controlar a página não depende de `worker-src`).
    - vale somada à global, por isso só restringe; scripts e estilos continuam autorizados pelos hashes da global;
    - para `img-src data:` não bloquear o ícone do site, o ícone passou a ser embutido no `app.html` (`data:`), e a política global aceita `img-src 'self' data:`. De quebra, nenhuma página faz mais a requisição do ícone.
 3. **Carga completa ao entrar e ao sair** (`data-sveltekit-reload`):

@@ -37,8 +37,8 @@
 		</li>
 		<li>
 			Para funcionar sem internet, o navegador guarda uma cópia das páginas e dos arquivos do site
-			depois que você abre o Terço ou o Exame. É só o conteúdo público do site, nunca o que você faz
-			nele. Para apagar essa cópia, limpe os dados do site nas configurações do navegador.
+			depois que você abre o Terço. É só o conteúdo público do site, nunca o que você faz nele. Para
+			apagar essa cópia, limpe os dados do site nas configurações do navegador.
 		</li>
 		<li>
 			O site é hospedado no GitHub Pages. Segundo a

@@ -13,6 +13,9 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter({ strict: true }),
+			// O service worker é registrado à mão, só pelas páginas do Terço (src/routes/terco/+layout.svelte):
+			// a página do Exame mantém `worker-src 'none'` (ADR-0004 e ADR-0005).
+			serviceWorker: { register: false },
 			// Subcaminho de publicação (por exemplo, `/Catoolicas` no GitHub Pages sem domínio próprio).
 			// Vazio no desenvolvimento e nos testes locais; o workflow de publicação define BASE_PATH.
 			paths: { base: (process.env.BASE_PATH ?? '') as '' | `/${string}` },
