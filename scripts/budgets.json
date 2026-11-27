@@ -1,5 +1,5 @@
 {
-	"$comment": "Metas PROPOSTAS (não medições), em bytes gzip nível 9. Medições e justificativas em docs/budgets.md. Este script conta o JS declarado no HTML; o JS carregado sob demanda (por exemplo, o conteúdo da série no Terço) é medido no E2E (tests/e2e/terco.e2e.ts, 'peso real'). JS padrão de 50 KB: a hidratação do SvelteKit 3 + Svelte 5 sozinha mediu ~39 KB. Terço: 60 KB (interface completa, meta prevista na rev. 1). Páginas sem interatividade: 0. Exame: 60 KB, como as páginas do Terço (o conteúdo vai no JS para a hidratação; cada rascunho aprovado acrescenta texto).",
+	"$comment": "Metas PROPOSTAS (não medições), em bytes gzip nível 9. Medições e justificativas em docs/budgets.md. Este script conta o JS declarado no HTML; o JS carregado sob demanda (por exemplo, o conteúdo da série no Terço) é medido no E2E (tests/e2e/terco.e2e.ts, 'peso real'). JS padrão de 50 KB: a hidratação do SvelteKit 3 + Svelte 5 sozinha mediu ~39 KB. Terço: 60 KB (interface completa, meta prevista na rev. 1). Páginas sem interatividade: 0. Exame: 60 KB, como as páginas do Terço (o conteúdo vai no JS para a hidratação; cada rascunho aprovado acrescenta texto). Fontes: até 3 woff2 e 120 KB no total (Cormorant Garamond 400, 600 e 400 itálico, como no terco-diario).",
 	"padrao": {
 		"htmlGzip": 30720,
 		"jsGzip": 51200,
@@ -30,5 +30,9 @@
 		"exame/index.html": {
 			"jsGzip": 61440
 		}
+	},
+	"fontes": {
+		"arquivos": 3,
+		"bytes": 122880
 	}
 }

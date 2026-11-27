@@ -22,7 +22,7 @@ Este documento separa duas coisas:
 | JS inicial (gzip), páginas interativas                 | ≤ 50 KB (padrão; recalibrado na CHG-0001b) | `pnpm budget`       |
 | JS inicial, páginas sem interatividade (`csr = false`) | **0**                                      | `pnpm budget`       |
 | CSS (gzip)                                             | ≤ 15 KB                                    | `pnpm budget`       |
-| Fontes                                                 | ≤ 2 woff2, ≤ 120 KB no total               | a partir do M1      |
+| Fontes                                                 | ≤ 3 woff2, ≤ 120 KB no total               | `pnpm budget`       |
 | Primeira visita ao `/terco`, sem imagens               | ≤ 200 KB transferidos                      | a partir do M1      |
 | LCP / CLS / INP (Lighthouse mobile, throttling padrão) | ≤ 2,5 s / ≤ 0,1 / ≤ 200 ms                 | manual a cada marco |
 
@@ -93,6 +93,12 @@ Ambiente: Node 22.23.5, pnpm 12.23.0, SvelteKit 3.4.0, Svelte 5.59.1, Vite 8.3.8
 - **Depois da revisão independente:** ícone embutido no `app.html` (`data:`): +~250 B de HTML por página e uma requisição a menos. O exame passou a 50,2 KB de JS (campos desativados até a hidratação, isolamento do roteador).
 - **Limite do Exame:** 60 KB, como as páginas do Terço. O conteúdo vai no JS para a hidratação, e cada rascunho aprovado acrescenta texto (os 11 atuais somam ~2 KB).
 - **Efeito no Terço: +0,1 KB.** Uma primeira versão usava `{...atributos}` nos campos e `value` no `<select>`. Isso trouxe ao pedaço de JS **compartilhado por todas as páginas interativas** o código genérico de atributos e de seleção do Svelte: +2,5 KB no Terço, que ficou a 0,4 KB do limite. Com atributos literais e o seletor sincronizado por `$effect`, o custo sumiu (ADR-0004).
+
+### 27/11/2026 — CHG-0004b (fonte Cormorant Garamond)
+
+- **Fontes:** 3 woff2 (400, 600 e 400 itálico, subconjunto latino), 68,3 KB no total, com limite de 120 KB.
+- **Por que 3:** são as faces que o `terco-diario` usa. A meta anterior era de 2 arquivos.
+- **Pré-carga:** 400 e 600, em todas as páginas.
 
 ### Referência externa (para comparação, não é meta)
 

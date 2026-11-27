@@ -3,6 +3,10 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import type { LayoutProps } from './$types';
+	// Faces usadas logo ao abrir qualquer página (texto e títulos): pré-carregadas, para o texto não
+	// trocar de fonte depois e para nenhuma página buscar fonte só depois de uma interação.
+	import fonteNormal from '#lib/fontes/cormorant-garamond-latin-400-normal.woff2?url';
+	import fonteSemiNegrito from '#lib/fontes/cormorant-garamond-latin-600-normal.woff2?url';
 
 	let { children }: LayoutProps = $props();
 
@@ -28,6 +32,11 @@
 		return undefined;
 	}
 </script>
+
+<svelte:head>
+	<link rel="preload" href={fonteNormal} as="font" type="font/woff2" crossorigin="anonymous" />
+	<link rel="preload" href={fonteSemiNegrito} as="font" type="font/woff2" crossorigin="anonymous" />
+</svelte:head>
 
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 

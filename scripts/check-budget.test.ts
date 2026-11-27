@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { avaliar, extrairRecursos, limitesPara, type Orcamento } from './check-budget.ts';
+import {
+	avaliar,
+	avaliarFontes,
+	extrairRecursos,
+	limitesPara,
+	type Orcamento
+} from './check-budget.ts';
 
 describe('extrairRecursos', () => {
 	it('encontra JS de modulepreload, <script src> e import() inline, e CSS de stylesheet, em qualquer ordem de atributos', () => {
@@ -74,5 +80,17 @@ describe('avaliar', () => {
 			{ pagina: 'outra.html', metrica: 'htmlGzip', medido: 101, limite: 100 },
 			{ pagina: 'outra.html', metrica: 'cssGzip', medido: 51, limite: 50 }
 		]);
+	});
+});
+
+describe('avaliarFontes', () => {
+	it('sem limite configurado, não avalia', () => {
+		expect(avaliarFontes({ arquivos: 9, bytes: 1e9 }, undefined)).toEqual([]);
+	});
+
+	it('aceita dentro do limite e aponta arquivos e bytes excedidos', () => {
+		const limite = { arquivos: 3, bytes: 122880 };
+		expect(avaliarFontes({ arquivos: 3, bytes: 122880 }, limite)).toEqual([]);
+		expect(avaliarFontes({ arquivos: 4, bytes: 200000 }, limite)).toHaveLength(2);
 	});
 });
