@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { SecaoExame } from '#lib/modules/exame/domain/tipos.ts';
+import type { ItemExame, SecaoExame } from '#lib/modules/exame/domain/tipos.ts';
 import { ATOS } from './atos.ts';
 import { ORACAO_INICIAL, ORIENTACOES, ROTEIRO } from './orientacoes.ts';
 import { ITENS_RASCUNHO, SECOES_RASCUNHO } from './rascunhos.ts';
@@ -49,12 +49,24 @@ describe('conteúdo do Exame — base do terco-diario', () => {
 });
 
 describe('conteúdo do Exame — rascunhos assistidos', () => {
-	const itensRascunho = [...ITENS_RASCUNHO, ...SECOES_RASCUNHO.flatMap((s) => s.itens)];
+	const itensRascunho: ItemExame[] = [
+		...ITENS_RASCUNHO,
+		...SECOES_RASCUNHO.flatMap((s) => [...s.itens])
+	];
 
-	it('estão todos em revisão e marcados como rascunho assistido', () => {
+	it('guardam a origem de rascunho assistido, aprovados ou não', () => {
 		for (const x of [...SECOES_RASCUNHO, ...itensRascunho]) {
-			expect(x.status).toBe('em-revisao');
+			expect(['aprovado', 'em-revisao']).toContain(x.status);
 			expect(x.origem).toBe('rascunho-assistido');
+			expect(x.procedencia.origem).toBe('rascunho-assistido (CHG-0005)');
+		}
+	});
+
+	it('textos não vazios e sem HTML', () => {
+		for (const item of itensRascunho) {
+			expect(item.pergunta.trim(), item.id).not.toBe('');
+			expect(item.acusacao.trim(), item.id).not.toBe('');
+			expect(semHtml(item.pergunta + item.acusacao + (item.nota ?? ''))).toBe(true);
 		}
 	});
 

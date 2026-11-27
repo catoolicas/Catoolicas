@@ -332,6 +332,13 @@
 		min-height: 44px;
 	}
 
+	/* Mesmo tamanho das caixas dos itens. */
+	.estados label :global(input) {
+		width: 1.4rem;
+		height: 1.4rem;
+		margin: 0;
+	}
+
 	.lista {
 		margin-top: var(--espaco-5);
 		padding-top: var(--espaco-4);
