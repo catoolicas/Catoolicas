@@ -32,7 +32,8 @@ export default defineConfig({
 						'unsafe-hashes',
 						'sha256-S8qMpvofolR8Mpjy4kQvEm7m1q8clzU4dfDH0AmvZjo='
 					],
-					'img-src': ['self'],
+					// data: só para o ícone embutido no app.html (sem requisição).
+					'img-src': ['self', 'data:'],
 					'font-src': ['self'],
 					'connect-src': ['self'],
 					'object-src': ['none'],

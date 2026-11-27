@@ -5,6 +5,12 @@ import svelte from 'eslint-plugin-svelte';
 import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import globals from 'globals';
 import ts from 'typescript-eslint';
+import {
+	ARQUIVOS_COMPARTILHADOS,
+	ARQUIVOS_DO_EXAME,
+	REGRAS_COMPARTILHADAS,
+	REGRAS_DE_PRIVACIDADE
+} from './scripts/eslint-privacidade.ts';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
 
@@ -25,7 +31,9 @@ export default defineConfig(
 		rules: {
 			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
 			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-			'no-undef': 'off'
+			'no-undef': 'off',
+			// Permite omitir campos com desestruturação: `({ campo, ...resto }) => resto`.
+			'@typescript-eslint/no-unused-vars': ['error', { ignoreRestSiblings: true }]
 		}
 	},
 	{
@@ -39,8 +47,16 @@ export default defineConfig(
 		}
 	},
 	{
-		// Override or add rule settings here, such as:
-		// 'svelte/button-has-type': 'error'
-		rules: {}
+		// Exame de consciência: nada sai da memória da página (docs/adr/0004-privacidade-exame.md).
+		// Os testes unitários rodam no Node, não no navegador, e ficam de fora.
+		files: ARQUIVOS_DO_EXAME,
+		ignores: ['**/*.test.ts'],
+		rules: REGRAS_DE_PRIVACIDADE
+	},
+	{
+		// Layout e hooks também rodam na página do exame: as mesmas regras de código (sem as de
+		// marcação e de imports, que o layout precisa).
+		files: ARQUIVOS_COMPARTILHADOS,
+		rules: REGRAS_COMPARTILHADAS
 	}
 );

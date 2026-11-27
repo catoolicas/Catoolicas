@@ -4,6 +4,7 @@ import { AxeBuilder } from '@axe-core/playwright';
 const ROTAS = [
 	{ caminho: './', h1: 'Catoolicas', linkAtual: 'Início' },
 	{ caminho: './terco/', h1: 'Terço', linkAtual: 'Terço' },
+	{ caminho: './exame/', h1: 'Exame de consciência', linkAtual: 'Exame' },
 	{ caminho: './sobre/', h1: 'Sobre o projeto', linkAtual: 'Sobre' }
 ] as const;
 

@@ -52,6 +52,9 @@ jobs:
         env:
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
+      - name: Nenhum rascunho em revisão no build
+        run: pnpm check:rascunhos
+
       - name: Orçamento de desempenho
         run: pnpm budget
 

@@ -7,7 +7,12 @@
 		<meta name="color-scheme" content="light dark" />
 		<!-- Não enviar a página de origem a sites externos (vale também sem cabeçalhos do host). -->
 		<meta name="referrer" content="no-referrer" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+		<!-- Ícone embutido (data:): nenhuma requisição, inclusive na página do Exame, cuja CSP só aceita imagens data: (ADR-0004). -->
+		<link
+			rel="icon"
+			href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cstyle%3Epath%7Bfill:%237a1f1a%7D@media (prefers-color-scheme:dark)%7Bpath%7Bfill:%23e0a39b%7D%7D%3C/style%3E%3Cpath d='M14 3h4v8h8v4h-8v14h-4V15H6v-4h8z'/%3E%3C/svg%3E"
+			type="image/svg+xml"
+		/>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

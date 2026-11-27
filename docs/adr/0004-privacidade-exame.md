@@ -1,0 +1,72 @@
+# ADR-0004 — Privacidade do Exame de consciência
+
+- **Status:** Aceito (plano aprovado em 26/11/2026; implementado na CHG-0006)
+- **Data:** 26/11/2026
+- **Requisito de origem (pedido dos responsáveis):** "Nenhuma informação inserida ou selecionada no exame poderá ser transmitida ao servidor, registrada em logs, enviada a serviços analíticos ou persistida automaticamente. A funcionalidade deverá operar localmente na memória do navegador durante a sessão. Não utilizar localStorage, sessionStorage, IndexedDB, cookies ou bancos remotos para armazenar o conteúdo do exame. A impressão deverá ser gerada localmente."
+
+## Contexto
+
+O exame lida com o dado mais sensível do projeto: pecados que a pessoa reconhece. Pela LGPD, convicção religiosa é dado sensível (art. 5º, II). O site é estático (ADR-0002), sem servidor próprio nem análise de audiência. Mesmo assim, um dado pode escapar da memória da página por vários caminhos.
+
+## Modelo de ameaças
+
+| Caminho por onde o dado poderia sair                                                                                                                                        | Quem causaria                           | Barreira                                                                                                                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Rede: fetch, XMLHttpRequest, WebSocket, EventSource, sendBeacon                                                                                                             | código do projeto ou de uma dependência | CSP própria da página (`connect-src 'none'`), regras de lint, E2E "nenhuma requisição"                                                                                                                                                                                                              |
+| Requisição à própria origem com dados na URL (imagem, `background-image`, prefetch, script, estilo, navegação)                                                              | código do projeto                       | CSP própria (`img-src data:`: nenhuma imagem com requisição); lint (elementos e atributos de URL, `style:`, `{...}`, `<svelte:element>`, `Image`, `location`, `open`); E2E. URLs de script, estilo e fonte da própria origem e navegação não são bloqueáveis por CSP: ficam com o lint e a revisão. |
+| Armazenamento: localStorage, sessionStorage, IndexedDB, Cache, cookies                                                                                                      | código do projeto                       | lint; E2E compara tudo antes e depois                                                                                                                                                                                                                                                               |
+| Histórico, URL, título, `window.name`                                                                                                                                       | código (por exemplo, roteamento raso)   | lint (`history`, `$app/navigation` proibidos); E2E compara URL, título, `history.length`, `history.state` e `window.name`                                                                                                                                                                           |
+| Console e logs                                                                                                                                                              | código do projeto                       | lint (`console` como global, inclusive por apelido, `reportError`). `throw new Error(dado)` ainda chegaria ao console: revisão de código.                                                                                                                                                           |
+| Restauração de formulário pelo navegador (recarregar, voltar)                                                                                                               | o navegador                             | `autocomplete="off"` em todo campo; valores de mão única (o estado manda no campo na hidratação); E2E simula a restauração                                                                                                                                                                          |
+| Cache de navegação (bfcache) guardando a página com as marcações                                                                                                            | o navegador                             | `pagehide` e `pageshow` (persisted) zeram o estado; carga completa ao entrar e ao sair; E2E com o bfcache **ligado** no Chromium                                                                                                                                                                    |
+| Autopreenchimento, corretor, sugestões de escrita, gerenciadores de senha                                                                                                   | navegador, teclado, extensões           | atributos de "não use" em todo campo (`campos.ts`), sem `name` e sem `<form>`. **São pedidos, não garantias.**                                                                                                                                                                                      |
+| Tradução automática                                                                                                                                                         | navegador                               | `translate="no"` nos campos e na "Minha lista". **Pedido, não garantia.**                                                                                                                                                                                                                           |
+| Rascunhos em revisão publicados por engano                                                                                                                                  | processo editorial                      | o build de produção nem inclui `rascunhos.ts` (só `rascunhos-aprovados.ts`, gerado); a inclusão exige `vite dev` (`DEV` **e** `MODE === 'development'`); `pnpm check:rascunhos` procura todo texto e id em revisão em **todo** o `build/`, no CI e antes de publicar                                |
+| JavaScript desligado ou hidratação que falhou (por exemplo, HTML antigo em cache depois de uma publicação)                                                                  | o navegador, o ambiente                 | sem o código da página nada apagaria o que fosse marcado: os campos e botões ficam **desativados** até a hidratação, com explicação (`<noscript>` no topo e aviso na lista)                                                                                                                         |
+| Efeitos do roteador do SvelteKit na página: posição de rolagem no `sessionStorage` (ao esconder a aba ou descarregar) e `version.json` (ao focar a janela ou mostrar a aba) | o framework                             | a página do exame impede que o roteador receba `beforeunload`, `visibilitychange` e o `focus` da janela (ouvintes de captura); E2E confere `sessionStorage` vazio depois de recarregar e nenhuma violação de CSP ao focar e esconder                                                                |
+| Código compartilhado que roda na página (layout, hooks)                                                                                                                     | código do projeto                       | as regras de lint de código (globais, propriedades, console) também valem para `+layout.svelte`, `+layout.ts` e `hooks`; o `app.html` é HTML fixo, revisado à mão                                                                                                                                   |
+
+**Fora do alcance da página, e dito no aviso de privacidade:** extensões instaladas (leem qualquer página), teclados que ignoram os pedidos, o que for impresso ou salvo em PDF, o histórico registrar que a página foi aberta, o registro de acesso do GitHub Pages (IP e endereço da página, nunca o conteúdo) e quem estiver com o aparelho.
+
+## Decisão
+
+1. **Estado só na memória da página.**
+   - `EstadoExame` (`state/exame.svelte.ts`) é criado pelo componente da página, nunca como singleton de módulo.
+   - Nada vai para armazenamento, URL, título, histórico ou rede.
+   - `limpar()` volta tudo ao início. É chamado pelo botão "Apagar tudo agora" (sem confirmação: serve para apagar na hora), no `pagehide` e no `pageshow` vindo do cache de navegação.
+2. **CSP adicional na página**, numa segunda `<meta>` escrita literalmente em `routes/exame/+page.svelte`:
+   - `connect-src 'none'; img-src data:; form-action 'none'; frame-src 'none'; worker-src 'none'; media-src 'none'; manifest-src 'none'; object-src 'none'; base-uri 'none'`;
+   - vale somada à global, por isso só restringe; scripts e estilos continuam autorizados pelos hashes da global;
+   - para `img-src data:` não bloquear o ícone do site, o ícone passou a ser embutido no `app.html` (`data:`), e a política global aceita `img-src 'self' data:`. De quebra, nenhuma página faz mais a requisição do ícone.
+3. **Carga completa ao entrar e ao sair** (`data-sveltekit-reload`):
+   - ao entrar, a página começa do zero e já com a CSP própria no HTML;
+   - ao sair, a memória do exame é descartada inteira, e a CSP restritiva não continua valendo em outra página;
+   - links com recarga não são pré-carregados pelo SvelteKit.
+4. **Campos** (`CaixaPrivada`, `TextoPrivado` e o seletor do ato):
+   - atributos literais: `autocomplete="off"`, `spellcheck="false"`, `autocorrect="off"`, `autocapitalize="off"`, `writingsuggestions="false"`, `translate="no"` e as marcações documentadas por 1Password, LastPass, Bitwarden, Dashlane, Grammarly e LanguageTool;
+   - escritos no HTML pré-renderizado, isto é, antes de qualquer restauração do navegador;
+   - **valores de mão única** (`checked={...}`, `value={...}`, sem `bind:`): na hidratação, `bind:value` e `bind:checked` adotariam um valor restaurado pelo navegador, enquanto o valor de mão única é sobrescrito pelo estado. O seletor do ato é sincronizado por um `$effect`;
+   - **desativados até a hidratação**: sem o código da página (JavaScript desligado ou que não carregou), nada apagaria o que fosse marcado. Há explicação no `<noscript>` do topo e num aviso na lista que some na hidratação.
+5. **Roteador do SvelteKit isolado** enquanto o exame está aberto: ouvintes de captura na janela param `beforeunload`, `visibilitychange` e o `focus` da própria janela antes de chegarem ao roteador. Sem isso, ele gravaria a posição de rolagem no `sessionStorage` (diz em que parte do exame a pessoa estava) e buscaria `version.json`. `beforeunload` tem o documento como alvo (herança antiga dos navegadores), por isso é parado sem condição.
+6. **Regras de lint** em `src/lib/modules/exame/**` e `src/routes/exame/**` (`scripts/eslint-privacidade.ts`):
+   - globais e propriedades (também por desestruturação) de rede, armazenamento, histórico, console e outras janelas proibidas;
+   - `eval` e afins;
+   - `bind:` (exceto `bind:this`), `{...atributos}`, `style:` e estilo inline com dados, `<svelte:element>`;
+   - elementos que buscam algo na rede, navegam ou enviam (`a`, `img`, `link`, `script`, `iframe`, `form`...) e atributos de URL com dados;
+   - `<svelte:head>` literal (título e CSP sem interpolação); campos sem atributo `name`;
+   - import dinâmico só de `#content/exame/`;
+   - **lista do que pode ser importado** (`svelte`, `$app/environment|paths|state`, o próprio módulo e o seu conteúdo), **sem `..` em nenhum caminho**: qualquer dependência nova passa por revisão e muda esta regra explicitamente;
+   - as regras de código (globais, propriedades, console) também valem para o layout e os hooks, que rodam na página do exame.
+   - Ficam de fora os testes unitários (rodam no Node).
+   - As regras são uma barreira contra descuidos, não uma caixa de areia: código feito para burlá-las ainda é possível. Por isso há a CSP e a suíte E2E, que mede o comportamento real.
+7. **Impressão** por `@media print`: a página esconde tudo menos o título e a lista. Sem iframe, sem biblioteca, sem gerar arquivo.
+8. **O exame não é a confissão:** a página diz isso e não dá "aconselhamento" automático. A lista só reúne o que a pessoa marcou, com os textos aprovados.
+
+## Consequências
+
+- **Mais garantias verificáveis:** cada barreira tem teste, e cada teste foi validado por mutação (CHG-0006). Uma revisão independente encontrou lacunas (JavaScript desligado, efeitos do roteador, imagens para a própria origem, desvios do lint, testes que não podiam falhar); todas foram corrigidas e ganharam teste (CHG-0006, "Revisão independente").
+- **Desenvolvimento:** na página do exame, o recarregamento automático do Vite (HMR) não funciona, porque a CSP bloqueia o WebSocket dele. É preciso recarregar a página à mão.
+- **Ícone embutido:** cada página ganhou ~250 B de HTML e perdeu uma requisição. Logos e imagens futuras na página do exame terão de ser SVG embutido ou `data:`.
+- **Peso:** os atributos literais (em vez de `{...CAMPO_PRIVADO}`) e o seletor sem `value` evitam o código genérico de atributos do Svelte, que acrescentaria ~2,5 KB ao JS **de todas as páginas interativas** (medido).
+- **Dependências:** qualquer biblioteca no exame exige mudar a lista do lint. É de propósito.
+- **Limites:** o que depende do navegador, do teclado ou de extensões não pode ser garantido. Está no aviso e no checklist manual (`docs/privacy/exame-checklist.md`).
